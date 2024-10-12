@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Pierre Blanche</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#282828">
+<link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple.png">
+<link rel="manifest" href="/pwa.json">
+<link rel="canonical" href="https://pierre-blanche-escalade.fr">
+<style>
+@import "fonts/barlow.css";
+:where(*){margin:0;padding:0;box-sizing:border-box}
+html{
+  width:100%;height:100%;background:#2a2a2a;color:#ccc;
+  font:clamp(7pt,4pt + 1vw + 1vh,32pt)/1.5 __barlow__;
+}
+body{position:relative;min-height:100%;display:grid;place-items:center;padding:2em}
+body>*{grid-column:1;grid-row:1}
+body>img{opacity:.05;aspect-ratio:1;width:80vw}
+h1{font-size:2em;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
+h1>span:nth-child(1){font-style:italic}
+h1>span:nth-child(2){font-size:1.5em;font-variation-settings:"wght" 120, "wdth" 350;text-transform:uppercase}
+h1>span:nth-child(3){font-size:.65em;font-style:italic;font-variation-settings:"wght" 60, "wdth" 300;margin-top:.5em}
+</style>
+</head>
+<body>
+<img src="favicon.svg" alt="Logo de Pierre Blanche">
+<h1>
+  <span>Association Sportive</span>
+  <span>Pierre Blanche</span>
+  <span>Club d'escalade de Fontenay-le-Comte</span>
+</h1>
+</body>
+</html>

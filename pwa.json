@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "Pierre Blanche",
+  "short_name": "Pierre Blanche",
+  "start_url": "/",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#282828",
+  "theme_color": "#282828",
+  "description": "Association Pierre Blanche - Club d'escalade de Fontenay-le-Comte",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/mask.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
