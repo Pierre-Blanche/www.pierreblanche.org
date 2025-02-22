@@ -19,8 +19,6 @@ html{
 body{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:1em 2em 2em 2em}
 body>*{grid-column:1;grid-row:2;place-self:center}
 header{place-self:stretch;grid-row:1;display:grid;grid-template-columns:auto 1fr auto;font-variation-settings:"wght" 40;font-size:max(1em,16pt)}
-header>a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
-header>a[href]:hover{color:#fff;text-decoration-color:currentColor}
 footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-variation-settings:"wght" 30}
 footer>img{height:2em}
 footer>div{text-align:center}
@@ -33,9 +31,9 @@ h1>span:nth-child(3){font-size:.65em;font-style:italic;font-variation-settings:"
 </head>
 <body>
 <header>
-  <a href=".">Informations</a>
+  <div>Informations</div>
   <div></div>
-  <a href="/login">Connexion pour les adhérents</a>
+  <div>Connexion pour les adhérents</div>
 </header>
 <img src="favicon.svg" alt="Logo de Pierre Blanche">
 <h1>
