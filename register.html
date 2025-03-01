@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<title>Pierre Blanche</title>
 <meta charset="utf-8">
+<title>🙋 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#282828">
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple.png">
 <link rel="manifest" href="/pwa.json">
 <link rel="canonical" href="https://pierre-blanche-escalade.fr">
-<link rel="stylesheet" href="fonts/barlow.css">
+<link rel="stylesheet" href="/fonts/barlow.css">
 <style>
 :where(*){margin:0;padding:0;box-sizing:border-box}
 html{
@@ -26,14 +26,19 @@ footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-v
 footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-form{display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center;gap:.5em}
-h1>:nth-child(1){font-style:italic}
-h1>:nth-child(2){font-size:1.5em;font-variation-settings:"wght" 120, "wdth" 350;text-transform:uppercase}
-h1>:nth-child(3){font-size:.65em;font-style:italic;font-variation-settings:"wght" 60, "wdth" 300;margin-top:.5em}
-input#username{
+form{display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:70ch;text-align:center;gap:.5em}
+form>*{min-height:4rem}
+form>:not(input){display:grid;place-items:center}
+form>:nth-child(1){min-height:6rem;font-size:1.35em;line-height:1.5}
+form>:nth-child(2),form>:nth-child(4){font-style:italic;place-items:end center}
+form>:nth-child(3),form>:nth-child(5){font-variation-settings:"wght" 120, "wdth" 350}
+input#email,#dob>input{
   appearance:none;border:1px solid currentColor;border-radius:.5em;background:rgba(127,127,127,.25);
   color:inherit;font:1em/1.5 monospace;padding:.5em 1em;width:clamp(30ch,50vw,48ch);
 }
+#dob{display:grid;grid-template-columns:repeat(3,auto);place-items:center;gap:1em}
+input#bday,input#bmonth{width:calc(2ch + 2em + 2px)}
+input#byear{width:calc(4ch + 2em + 2px)}
 </style>
 </head>
 <body>
@@ -42,22 +47,23 @@ input#username{
   <div></div>
   <div></div>
 </header>
-<img src="favicon.svg" alt="Logo de Pierre Blanche">
+<img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <form>
-  <label for="username">Email ou n° licence</label>
-  <input id="username" type="text" name="username" value="nobody@example.com" autocomplete="username webauthn">
-  <span>ok</span>
+  <h1>Enregistrement sur liste d'attente</h1>
+  <label for="email">Email</label>
+  <div><input id="email" type="email" placeholder="nobody@example.com" autocomplete="email"></div>
+  <label>Date de naissance</label>
+  <div id="dob">
+    <input id="bday" type="text" aria-label="jour" placeholder="jj" autocomplete="bday-day">
+    <input id="bmonth" type="text" aria-label="mois" placeholder="mm" autocomplete="bday-month">
+    <input id="byear" type="text" aria-label="année" placeholder="aaaa" autocomplete="bday-year">
+  </div>
 </form>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
-  <img src="flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
+  <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-const abortController=new AbortController();
-const signal=abortController.signal;
-const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await(await fetch('/api/auth/req',{signal})).json());
-const mediation='conditional'; //'required';
-const credential=await navigator.credentials.get({publicKey,signal,mediation});
 </script>
 </body>
 </html>
