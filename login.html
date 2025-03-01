@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>🏠 Pierre Blanche</title>
+<title>🔐 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#282828">
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
@@ -26,7 +26,14 @@ footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-v
 footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;text-align:center}
+form{display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center;gap:.5em}
+h1>:nth-child(1){font-style:italic}
+h1>:nth-child(2){font-size:1.5em;font-variation-settings:"wght" 120, "wdth" 350}
+h1>:nth-child(3){font-size:.65em;font-style:italic;font-variation-settings:"wght" 60, "wdth" 300;margin-top:.5em}
+input#username{
+  appearance:none;border:1px solid currentColor;border-radius:.5em;background:rgba(127,127,127,.25);
+  color:inherit;font:1em/1.5 monospace;padding:.5em 1em;width:clamp(30ch,50vw,48ch);
+}
 </style>
 </head>
 <body>
@@ -36,8 +43,11 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
   <div></div>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
-<main>Profile
-</main>
+<form>
+  <label for="username">Email ou n° licence</label>
+  <input id="username" type="text" name="username" value="nobody@example.com" autocomplete="username webauthn">
+  <span>ok</span>
+</form>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
