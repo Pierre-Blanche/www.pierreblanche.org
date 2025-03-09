@@ -43,9 +43,21 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-if(isNaN(t)||new Date().getTime()>t){
-  // todo trigger passkey auth
+const decode=b64url=>{
+
+};
+try{
+  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
+  if(isNaN(t)||new Date().getTime()>t){
+    let {challenge,allowCredentials:{id}}=await(await fetch('/api/auth/challenge',{credentials:'include'})).json();
+
+    navigator.credentials.create({})
+
+    // todo trigger passkey auth
+  }
+}catch(e){
+  console.error(e);
+  location.assign('/login');
 }
 </script>
 </body>
