@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>🔢 Pierre Blanche</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#282828">
+<link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple.png">
+<link rel="manifest" href="/pwa.json">
+<link rel="canonical" href="https://pierre-blanche-escalade.fr">
+<link rel="stylesheet" href="/fonts/kadwa.css">
+<style>
+:where(*){margin:0;padding:0;box-sizing:border-box}
+html{
+  width:100%;height:100%;background:#000;color:#bbb;
+  font:700 min(17.5vw,60vh)/1.25 __kadwa__;letter-spacing:.1em;
+}
+body{position:relative;min-height:100%;display:grid;place-items:center}
+div#code{display:flex;gap:.35em}
+</style>
+</head>
+<body>
+<main>
+  <div id="code">
+    <span>###</span><span>###</span>
+  </div>
+</main>
+<script type="module">
+const getSecret=async()=>{
+  const response=await fetch("/api/reg/code");
+  if(!response.ok){
+    location.assign("/user");
+  }
+  return await response.text();
+};
+const [secret,{TOTP}]=await Promise.all([getSecret(),import("/user/totp.mjs")]);
+const spans=[...document.querySelectorAll('div#code>span')];
+let next=Date.now();
+let timeout;
+const update=async ()=>{
+  clearTimeout(timeout);
+  const {otp,expires}=await TOTP.generate(secret);
+  console.log(otp);
+  const halves=[otp.substring(0,3),otp.substring(3)];
+  spans.forEach((it,i)=>it.textContent=halves[i]);
+  next=expires;
+  timeout=setTimeout(update,Math.max(0,next-Date.now()));
+};
+update();
+</script>
+</body>
+</html>

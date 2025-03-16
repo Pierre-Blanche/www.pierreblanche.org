@@ -43,19 +43,33 @@ input#username{
   <div></div>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
-<form>
-  <label for="username">Email ou n° licence</label>
-  <input id="username" type="text" name="username" value="nobody@example.com" autocomplete="username webauthn">
-  <span>ok</span>
+<form id="login">
+  <input id="username" type="text" name="username" value="" autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus>
+  <input id="email" hidden="hidden" type="email" name="email" value="" autocomplete="given-name" placeholder="email" aria-label="email">
+  <input id="first_name" hidden="hidden" type="text" name="first_name" value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom">
+  <input type="submit" value="OK">
 </form>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
+import {required,request} from '/auth.mjs';
+if(required()){
+  const req=await request();
+  if(req) location.assign('/user');
+  else{
+    const form=document.querySelector('form#login');
+    form.onsubmit=()=>{
+
+    }
+    const forms=form.querySelectorAll('input');
+    // show credential creation form
+  }
+}
 const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
 if(isNaN(t)||new Date().getTime()>t){
-  // todo trigger passkey auth
+  const {}=await import("/auth.mjs");
 }
 </script>
 </body>
