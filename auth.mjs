@@ -1,7 +1,7 @@
 /** @return {boolean} */
-const required=()=>{
+const required=(padding)=>{
   const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-  return isNaN(t)||new Date().getTime()>t;
+  return isNaN(t)||new Date().getTime()+padding>t;
 }
 /** @return {Promise<boolean>} */
 const request=async()=>{

@@ -33,7 +33,7 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
 <header>
   <a href=".">Informations</a>
   <div></div>
-  <div></div>
+  <a href=".">Déconnexion</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <main>Profile
@@ -43,22 +43,33 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-const decode=b64url=>{
-
-};
-try{
+const required=()=>{
+  const padding=30;
   const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-  if(isNaN(t)||new Date().getTime()>t){
-    let {challenge,allowCredentials:{id}}=await(await fetch('/api/auth/challenge',{credentials:'include'})).json();
-
-    navigator.credentials.create({})
-
-    // todo trigger passkey auth
-  }
-}catch(e){
-  console.error(e);
-  location.assign('/login');
+  return isNaN(t)||new Date().getTime()+padding>t;
 }
+if(required()) location.assign('/login');
+else (async()=>{
+  const signal=AbortSignal.timeout(30_000);
+  let response=await fetch('/api/credentials',{method:'HEAD',credentials:'include',signal});
+  if(response.ok) return;
+  try{
+    response=await fetch('/api/credential_creation_options',{credentials: 'include',signal});
+    if(!response.ok) return;
+    const publicKey=PublicKeyCredential.parseCreationOptionsFromJSON(await response.json());
+    const credential=await navigator.credentials.create({publicKey,signal});
+    if(!credential) return;
+    const body=new FormData();
+    body.append('i',new Blob([credential.rawId],{type: 'binary/octet-stream'}));
+    body.append('a',credential.response.getPublicKeyAlgorithm().toString());
+    body.append('k',new Blob([credential.response.getPublicKey()],{type: 'binary/octet-stream'}));
+    body.append('c',new Blob([credential.response.clientDataJSON],{type: 'binary/octet-stream'}));
+    body.append('d',new Blob([credential.response.authenticatorData],{type: 'binary/octet-stream'}));
+    response=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
+    if(response.ok) return;
+  }catch(e){console.error(e)} // todo remove
+  console.error('new passkey flow did not finish correctly');
+})();
 </script>
 </body>
 </html>

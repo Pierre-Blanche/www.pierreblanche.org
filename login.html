@@ -26,14 +26,36 @@ footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-v
 footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-form{display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center;gap:.5em}
-h1>:nth-child(1){font-style:italic}
-h1>:nth-child(2){font-size:1.5em;font-variation-settings:"wght" 120, "wdth" 350}
-h1>:nth-child(3){font-size:.65em;font-style:italic;font-variation-settings:"wght" 60, "wdth" 300;margin-top:.5em}
-input#username{
+main{display:grid;grid-template-rows:1fr;grid-template-columns:1fr;place-items:center}
+main>*{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:flex;flex-direction:column;gap:.5em}
+main>*[inert]{opacity:0}
+input:is([type="text"],[type="email"]){
   appearance:none;border:1px solid currentColor;border-radius:.5em;background:rgba(127,127,127,.25);
   color:inherit;font:1em/1.5 monospace;padding:.5em 1em;width:clamp(30ch,50vw,48ch);
 }
+input:is([type="button"],[type="submit"]){
+  appearance:none;border:.1em solid currentColor;border-radius:.25em;background:none;color:inherit;font-size:1em;line-height:1;
+  padding:.25em .75em;cursor:pointer;opacity:.75;
+}
+input[type="submit"]{opacity:1;background:rgb(from #1e90ff r g b /50%)}
+input:is([type="button"],[type="submit"]):focus-visible{outline:none;border-color:#1e90ff}
+h1{
+  font-size:1.75em;line-height:1.25;text-align:start;font-variation-settings:"wght" 44, "wdth" 500;
+}
+form{padding:.5em 0 3.5em 0;display:flex;flex-direction:column}
+form+div,form+div+div{font-variation-settings:"wght" 44, "wdth" 300}
+main a{
+  color:#1e90ff;font-variation-settings:"wght" 88, "wdth" 300;
+  text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%);
+}
+form#profile input:is([type="text"],[type="email"]){
+  border-radius:0;border:0;border-bottom:.1em solid rgb(from currentColor r g b /50%);background:none;
+  padding:.25em 0 0 0;margin:.5em 0;
+}
+form#profile input:is([type="text"],[type="email"]):focus-visible{outline:none;border-color:#1e90ff}
+form #buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
+::placeholder{font-style:italic}
+input:user-invalid{color:#c22e22}
 </style>
 </head>
 <body>
@@ -43,34 +65,74 @@ input#username{
   <div></div>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
-<form id="login">
-  <input id="username" type="text" name="username" value="" autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus>
-  <input id="email" hidden="hidden" type="email" name="email" value="" autocomplete="given-name" placeholder="email" aria-label="email">
-  <input id="first_name" hidden="hidden" type="text" name="first_name" value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom">
-  <input type="submit" value="OK">
-</form>
+<main>
+  <div>
+    <h1>Connection</h1>
+    <form id="login">
+      <input id="username" type="text" name="username" value="" required autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
+    </form>
+    <div>
+      <p>Vous avez déjà un compte, mais vous n'arrivez pas à vous connecter ?</p>
+      <a id="otp" href=".">Recevoir un lien de connexion par email</a>
+    </div>
+    <div>
+      <p>Pas encore de compte ?</p>
+      <a id="register" href=".">Inscription</a>
+    </div>
+  </div>
+  <div inert>
+    <h1>Profil</h1>
+    <form id="profile">
+      <input id="email" type="email" name="email" required value="" autocomplete="given-name" placeholder="email" aria-label="email" tabindex="2">
+      <input id="last_name" type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" aria-label="nom" tabindex="3">
+      <input id="first_name" type="text" name="first_name" required value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom" tabindex="4">
+      <!--  <input id="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
+      <div id="buttons"><input type="button" value="Annuler" tabindex="9"><input type="submit" value="OK" tabindex="8"></div>
+    </form>
+  </div>
+</main>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-import {required,request} from '/auth.mjs';
-if(required()){
-  const req=await request();
-  if(req) location.assign('/user');
-  else{
-    const form=document.querySelector('form#login');
-    form.onsubmit=()=>{
-
+const [loginTab,profileTab]=[...document.querySelectorAll('main>div')];
+document.querySelectorAll('a#otp,a#register').forEach(it=>it.addEventListener('click',e=>{
+  e.preventDefault();
+  loginTab.setAttribute('inert','');
+  profileTab.removeAttribute('inert');
+}));
+(async()=>{
+  const signal=AbortSignal.timeout(30_000);
+  try{
+    const response=await fetch('/api/auth/credential_request_options',{credentials:'include',signal});
+    const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
+    const options={signal,publicKey};
+    if(PublicKeyCredential.isConditionalMediationAvailable()) options.mediation='conditional';
+    const credential=await navigator.credentials.get({signal,publicKey});
+    if(credential){
+      const body=new FormData();
+      body.append('i',new Blob([credential.rawId],{type:'binary/octet-stream'}));
+      body.append('s',new Blob([credential.response.signature],{type:'binary/octet-stream'}));
+      body.append('u',new Blob([credential.response.userHandle],{type:'binary/octet-stream'}));
+      body.append('c',new Blob([credential.response.clientDataJSON],{type:'binary/octet-stream'}));
+      body.append('d',new Blob([credential.response.authenticatorData],{type:'binary/octet-stream'}));
+      const response=await fetch('/api/auth/validate_credential',{method:'POST',body,credentials:'include'});
+      if(response.ok){
+        location.assign('/user');
+        return;
+      }else if(PublicKeyCredential.signalUnknownCredential){
+        PublicKeyCredential.signalUnknownCredential({rpId:credential.rpId,credentialId:credential.id});
+      }
     }
-    const forms=form.querySelectorAll('input');
-    // show credential creation form
+  }catch(e){console.error(e)} // todo remove
+  console.error('passkey authentication did not finish correctly');
+  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
+  if(isNaN(t)){
+
   }
-}
-const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-if(isNaN(t)||new Date().getTime()>t){
-  const {}=await import("/auth.mjs");
-}
+})();
+
 </script>
 </body>
 </html>
