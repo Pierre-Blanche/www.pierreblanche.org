@@ -27,9 +27,10 @@ footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
 main{display:grid;grid-template-rows:1fr;grid-template-columns:1fr;place-items:center}
-main>*{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:flex;flex-direction:column;gap:.5em}
-main>*[inert]{opacity:0}
-input:is([type="text"],[type="email"]){
+main>div{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:grid;grid-template-columns:min-content;gap:.5em}
+main>div[inert]{opacity:0}
+main>div>*{flex:1}
+input#username{
   appearance:none;border:1px solid currentColor;border-radius:.5em;background:rgba(127,127,127,.25);
   color:inherit;font:1em/1.5 monospace;padding:.5em 1em;width:clamp(30ch,50vw,48ch);
 }
@@ -48,12 +49,14 @@ main a{
   color:#1e90ff;font-variation-settings:"wght" 88, "wdth" 300;
   text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%);
 }
-form#profile input:is([type="text"],[type="email"]){
+input:is([type="text"],[type="email"],[type="number"]){
+  color:inherit;font:1em/1.5 monospace;width:clamp(30ch,50vw,48ch);
   border-radius:0;border:0;border-bottom:.1em solid rgb(from currentColor r g b /50%);background:none;
   padding:.25em 0 0 0;margin:.5em 0;
 }
-form#profile input:is([type="text"],[type="email"]):focus-visible{outline:none;border-color:#1e90ff}
-form #buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
+form input:is([type="text"],[type="email"],[type="number"],[type="date"]):focus-visible{outline:none;border-color:#1e90ff}
+input[type="date"]{position:absolute;top:0;right:0;opacity:.1}
+form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
 input:user-invalid{color:#c22e22}
 </style>
@@ -67,28 +70,57 @@ input:user-invalid{color:#c22e22}
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <main>
   <div>
-    <h1>Connection</h1>
-    <form id="login">
+    <h1>Connexion</h1>
+    <form>
       <input id="username" type="text" name="username" value="" required autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
     </form>
     <div>
       <p>Vous avez déjà un compte, mais vous n'arrivez pas à vous connecter ?</p>
-      <a id="otp" href=".">Recevoir un lien de connexion par email</a>
+      <a id="otp" href>Recevoir un lien de connexion par email</a>
     </div>
     <div>
       <p>Pas encore de compte ?</p>
-      <a id="register" href=".">Inscription</a>
+      <a id="register" href>Inscription</a>
     </div>
   </div>
   <div inert>
-    <h1>Profil</h1>
-    <form id="profile">
-      <input id="email" type="email" name="email" required value="" autocomplete="given-name" placeholder="email" aria-label="email" tabindex="2">
-      <input id="last_name" type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" aria-label="nom" tabindex="3">
-      <input id="first_name" type="text" name="first_name" required value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom" tabindex="4">
-      <!--  <input id="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
-      <div id="buttons"><input type="button" value="Annuler" tabindex="9"><input type="submit" value="OK" tabindex="8"></div>
+    <p>Pour vous envoyer le lien de connexion, nous avons besoin soit de votre adresse email,
+      soit de votre nom et date de naissance (ou les trois si plusieurs comptes ont été créés avec la même adresse email).</p>
+    <form>
+      <input type="email" name="email" required value="" autocomplete="given-name" placeholder="email" aria-label="email" tabindex="2">
+      <input type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" aria-label="nom" tabindex="3">
+      <input type="text" name="first_name" value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom" tabindex="4">
+      <input type="text" name="dob" value="" autocomplete="bday" placeholder="date de naissance (ex: 2000-01-31)" aria-label="date de naissance" tabindex="5">
+      <input type="date" name="_dob" value="" aria-label="date de naissance">
+      <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
+      <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
     </form>
+  </div>
+  <div inert>
+    <p>Sous réserve que les informations que vous avez indiquées soient correctes et suffisantes,
+      un email vous a été envoyé avec un lien pour vous connecter.
+    <p>Ce lien est à usage unique et n'est seulement valide que quelques minutes.
+  </div>
+  <div inert>
+    <p>Pour votre demande d'inscription, vous devez renseigner une adresse email de contact,
+      ainsi que votre nom et date de naissance.
+    <p>Les demandes sont ensuite acceptées ou non en fonction de notre capacité d'accueil.
+    <form>
+      <input type="email" name="email" required value="" autocomplete="given-name" placeholder="email" aria-label="email" tabindex="2">
+      <input type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" aria-label="nom" tabindex="3">
+      <input type="text" name="first_name" required value="" autocomplete="given-name" placeholder="prénom" aria-label="prénom" tabindex="4">
+      <input type="date" name="dob" required value="" autocomplete="bday" placeholder="date de naissance (ex: 2000-01-31)" aria-label="date de naissance" tabindex="5">
+    <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
+      <input type="number" name="otp" value="" placeholder="code de préautorisation" aria-label="code de préautorisation" tabindex="-1">
+      <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
+    </form>
+  </div>
+  <div inert>
+    <p>Votre demande d'inscription a bien été prise en compte.
+    <p>Vous recevrez un message une fois votre demande acceptée.
+  </div>
+  <div inert>
+    <p>Désolé, une erreur est survenue. Veuillez réessayer plus tard.
   </div>
 </main>
 <footer>
@@ -96,13 +128,84 @@ input:user-invalid{color:#c22e22}
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-const [loginTab,profileTab]=[...document.querySelectorAll('main>div')];
-document.querySelectorAll('a#otp,a#register').forEach(it=>it.addEventListener('click',e=>{
+const tabs=[...document.querySelectorAll('main>div')];
+const [loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
+const selectTab=tab=>tabs.forEach(it=>it===tab?it.removeAttribute('inert'):it.setAttribute('inert',''));
+document.querySelectorAll('input[name="cancel"]').forEach(it=>it.addEventListener('click',e=>{
   e.preventDefault();
-  loginTab.setAttribute('inert','');
-  profileTab.removeAttribute('inert');
+  selectTab(loginTab);
 }));
-(async()=>{
+document.querySelector('#otp').addEventListener('click',async e=>{
+  e.preventDefault();
+  selectTab(otpRequestTab);
+});
+document.querySelector('#register').addEventListener('click',async e=>{
+  e.preventDefault();
+  selectTab(registerTab)
+});
+{
+  const form=otpRequestTab.querySelector('form');
+  const emailInput=form.querySelector('input[name="email"]');
+  const lastNameInput=form.querySelector('input[name="last_name"]');
+  const firstNameInput=form.querySelector('input[name="last_name"]');
+  const dobInput=form.querySelector('input[name="dob"]');
+  const maybeRequiredInputs=[emailInput,lastNameInput];
+  maybeRequiredInputs.forEach((it,i)=>it.addEventListener('change',_=>{
+    if(it.value?.trim()) maybeRequiredInputs.forEach(it=>it.removeAttribute('required'));
+    else if(!it[(i+1)%2].value?.trim()) maybeRequiredInputs.forEach(it=>it.setAttribute('required',''));
+  }));
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const body=new FormData();
+    const email=emailInput?.value?.trim();
+    if(email) body.append('email',email);
+    const lastName=lastNameInput?.value?.trim();
+    if(lastName) body.append('last_name',lastName);
+    const firstName=firstNameInput?.value?.trim();
+    if(firstName) body.append('first_name',firstName);
+    const dob=dobInput?.valueAsDate;
+    if(dob){
+      const yyyy=dob.getUTCFullYear().toString();
+      const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
+      const dd=(dob.getUTCDate()).toString().padStart(2,"0");
+      body.append('dob',yyyy+mm+dd);
+    }
+    const response=await fetch('/api/auth/opt',{method:'POST',body,credentials: 'include'});
+    selectTab(response.ok?otpSentTab:errorTab);
+  });
+}
+{
+  const form=registerTab.querySelector('form');
+  const emailInput=form.querySelector('input[name="email"]');
+  const lastNameInput=form.querySelector('input[name="last_name"]');
+  const firstNameInput=form.querySelector('input[name="last_name"]');
+  const dobInput=form.querySelector('input[name="dob"]');
+  const otpInput=form.querySelector('input[name="otp"]');
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const body=new FormData();
+    const email=emailInput?.value?.trim();
+    if(!email) return;
+    body.append('email',email);
+    const lastName=lastNameInput?.value?.trim();
+    if(!lastName) return;
+    body.append('last_name',lastName);
+    const firstName=firstNameInput?.value?.trim();
+    if(!firstName) return;
+    body.append('first_name',firstName);
+    const dob=dobInput?.valueAsDate;
+    if(!dob) return;
+    const yyyy=dob.getUTCFullYear().toString();
+    const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
+    const dd=(dob.getUTCDate()).toString().padStart(2,"0");
+    body.append('dob',yyyy+mm+dd);
+    const otp=otpInput?.value?.trim();
+    if(otp) body.append('otp',otp);
+    const response=await fetch('/api/user',{method:'PUT',body,credentials: 'include'});
+    selectTab(response.ok?registerConfirmationTab:errorTab);
+  });
+}
+abortable:{
   const signal=AbortSignal.timeout(30_000);
   try{
     const response=await fetch('/api/auth/credential_request_options',{credentials:'include',signal});
@@ -120,19 +223,14 @@ document.querySelectorAll('a#otp,a#register').forEach(it=>it.addEventListener('c
       const response=await fetch('/api/auth/validate_credential',{method:'POST',body,credentials:'include'});
       if(response.ok){
         location.assign('/user');
-        return;
+        break abortable;
       }else if(PublicKeyCredential.signalUnknownCredential){
         PublicKeyCredential.signalUnknownCredential({rpId:credential.rpId,credentialId:credential.id});
       }
     }
   }catch(e){console.error(e)} // todo remove
   console.error('passkey authentication did not finish correctly');
-  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-  if(isNaN(t)){
-
-  }
-})();
-
+}
 </script>
 </body>
 </html>
