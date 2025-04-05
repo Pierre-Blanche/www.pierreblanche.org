@@ -244,7 +244,7 @@ document.querySelector('#register').addEventListener('click',async e=>{
       const dd=d.toString().padStart(2,'0');
       body.append('dob',yyyy+mm+dd);
     }
-    const response=await fetch('/api/auth/otp',{method:'POST',body,credentials: 'include'});
+    const response=await fetch('/api/otp',{method:'POST',body});
     selectTab(response.ok?otpSentTab:errorTab);
   });
 }
@@ -293,14 +293,14 @@ document.querySelector('#register').addEventListener('click',async e=>{
     body.append('dob',dob);
     const otp=otpInput?.value?.trim();
     if(otp) body.append('otp',otp);
-    const response=await fetch('/api/user',{method:'PUT',body,credentials: 'include'});
+    const response=await fetch('/api/user',{method:'PUT',body});
     selectTab(response.ok?registerConfirmationTab:errorTab);
   });
 }
 abortable:{
   const signal=AbortSignal.timeout(30_000);
   try{
-    const response=await fetch('/api/auth/credential_request_options',{credentials:'include',signal});
+    const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
     const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
     const options={signal,publicKey};
     if(PublicKeyCredential.isConditionalMediationAvailable()) options.mediation='conditional';
@@ -312,7 +312,7 @@ abortable:{
       body.append('u',new Blob([credential.response.userHandle],{type:'binary/octet-stream'}));
       body.append('c',new Blob([credential.response.clientDataJSON],{type:'binary/octet-stream'}));
       body.append('d',new Blob([credential.response.authenticatorData],{type:'binary/octet-stream'}));
-      const response=await fetch('/api/auth/validate_credential',{method:'POST',body,credentials:'include'});
+      const response=await fetch('/api/auth/validate_credential',{method:'POST',body/*,credentials:'include'*/});
       if(response.ok){
         location.assign('/user');
         break abortable;
