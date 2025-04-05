@@ -294,7 +294,8 @@ document.querySelector('#register').addEventListener('click',async e=>{
     const otp=otpInput?.value?.trim();
     if(otp) body.append('otp',otp);
     const response=await fetch('/api/user',{method:'PUT',body});
-    if(response.status===400){
+    if(response.ok) selectTab(registerConfirmationTab);
+    else if(response.status===403){
       otpInput.classList.add('invalid');
       otpInput.value='';
       otpInput.placeholder='code invalide';
@@ -308,7 +309,7 @@ document.querySelector('#register').addEventListener('click',async e=>{
         clearInterval(timeout);
         reset();
       };
-    }else selectTab(response.ok?registerConfirmationTab:errorTab);
+    }else if(response.status>=500) selectTab(errorTab);
   });
 }
 abortable:{
