@@ -59,7 +59,7 @@ input:is([type="text"],[type="email"],[type="number"]){
 }
 form input:is([type="text"],[type="email"],[type="number"],[type="date"]):focus-visible{outline:none;border-color:#1e90ff}
 form>label{position:relative;line-height:1}
-input+span,input+span+span{visibility:hidden;overflow-x:hidden;font-size:.75em;position:relative;top:0;color:#1e90ff;font-style:italic}
+input~span{visibility:hidden;overflow-x:hidden;font-size:.75em;position:relative;top:0;color:#1e90ff;font-style:italic}
 input:focus-within:not(:placeholder-shown)+span{position:relative;visibility:visible;width:auto}
 input:focus-within:not(:placeholder-shown)+span+span{color:#1e90ff}
 input[name="dob"]+span{position:absolute}
@@ -67,6 +67,8 @@ input+span+span{visibility:visible;color:inherit}
 label input[type="date"]{position:absolute;bottom:0;right:0;visibility:hidden}
 label svg{position:absolute;width:2.25em;height:2.25em;padding:.5em;right:-.5em;bottom:.75em;fill:currentColor;opacity:.5;cursor:pointer}
 label svg:hover{opacity:1}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;padding:0}
+input[type="number"]{-moz-appearance:textfield;margin-top:1em}
 form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
 input:user-invalid{color:#c22e22}
@@ -155,7 +157,6 @@ input:user-invalid{color:#c22e22}
         <input type="date" name="_dob" value="" tabindex="-1">
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
-      <br>
       <label>
         <input type="number" name="otp" value="" placeholder="code de préautorisation" tabindex="-1">
         <span>code de préautorisation</span>
@@ -202,7 +203,7 @@ document.querySelector('#register').addEventListener('click',async e=>{
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
   const dobInput=form.querySelector('input[name="dob"]');
-  const dobButton=form.querySelector('input[name="dob"]+svg');
+  const dobButton=form.querySelector('input[name="dob"]~svg');
   const _dobInput=form.querySelector('input[name="_dob"]');
   const maybeRequiredInputs=[emailInput,lastNameInput];
   maybeRequiredInputs.forEach((it,i)=>it.addEventListener('change',_=>{
@@ -210,8 +211,9 @@ document.querySelector('#register').addEventListener('click',async e=>{
     else if(!it[(i+1)%2].value?.trim()) maybeRequiredInputs.forEach(it=>it.setAttribute('required',''));
   }));
   dobButton.addEventListener('click',e=>{
-    e.preventDefault();
-    _dobInput.showPicker();
+      e.preventDefault();
+      e.stopPropagation();
+      _dobInput.showPicker();
   });
   _dobInput.valueAsDate=defaultDate;
   _dobInput.addEventListener('change',_=>{
@@ -252,11 +254,12 @@ document.querySelector('#register').addEventListener('click',async e=>{
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
   const dobInput=form.querySelector('input[name="dob"]');
-  const dobButton=form.querySelector('input[name="dob"]+svg');
+  const dobButton=form.querySelector('input[name="dob"]~svg');
   const _dobInput=form.querySelector('input[name="_dob"]');
   const otpInput=form.querySelector('input[name="otp"]');
   dobButton.addEventListener('click',e=>{
     e.preventDefault();
+    e.stopPropagation();
     _dobInput.showPicker();
   });
   _dobInput.valueAsDate=new Date(2000,0,31,12,0,0,0);
