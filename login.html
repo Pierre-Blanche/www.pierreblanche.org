@@ -309,6 +309,17 @@ document.querySelector('#register').addEventListener('click',async e=>{
         clearInterval(timeout);
         reset();
       };
+    }else if(response.status===400){
+      emailInput.classList.add('invalid');
+      const reset=()=>{
+        emailInput.oninput=null;
+        emailInput.classList.remove('invalid');
+      };
+      const timeout=setTimeout(reset,3000);
+      emailInput.oninput=_=>{
+        clearInterval(timeout);
+        reset();
+      };
     }else if(response.status>=500) selectTab(errorTab);
   });
 }
