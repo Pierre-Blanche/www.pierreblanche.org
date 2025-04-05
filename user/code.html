@@ -28,7 +28,7 @@ div#code{display:flex;gap:.35em}
 </main>
 <script type="module">
 const getSecret=async()=>{
-  const response=await fetch("/api/reg/code");
+  const response=await fetch("/api/user/admin/reg/code");
   if(!response.ok){
     location.assign("/user");
   }

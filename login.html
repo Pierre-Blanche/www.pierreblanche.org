@@ -71,7 +71,7 @@ input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-in
 input[type="number"]{-moz-appearance:textfield;margin-top:1em}
 form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
-input:user-invalid{color:#c22e22}
+input:user-invalid,input.invalid::placeholder{color:#c22e22}
 </style>
 </head>
 <body>
@@ -158,8 +158,8 @@ input:user-invalid{color:#c22e22}
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
       <label>
-        <input type="number" name="otp" value="" placeholder="code de préautorisation" tabindex="-1">
-        <span>code de préautorisation</span>
+        <input type="number" name="otp" value="" placeholder="code de pré-autorisation" tabindex="-1">
+        <span>code de pré-autorisation</span>
       </label>
       <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
     </form>
@@ -294,7 +294,21 @@ document.querySelector('#register').addEventListener('click',async e=>{
     const otp=otpInput?.value?.trim();
     if(otp) body.append('otp',otp);
     const response=await fetch('/api/user',{method:'PUT',body});
-    selectTab(response.ok?registerConfirmationTab:errorTab);
+    if(response.status===400){
+      otpInput.classList.add('invalid');
+      otpInput.value='';
+      otpInput.placeholder='code invalide';
+      const reset=()=>{
+        otpInput.oninput=null;
+        otpInput.classList.remove('invalid');
+        otpInput.placeholder='code de pré-autorisation';
+      };
+      const timeout=setTimeout(reset,3000);
+      otpInput.oninput=_=>{
+        clearInterval(timeout);
+        reset();
+      };
+    }else selectTab(response.ok?registerConfirmationTab:errorTab);
   });
 }
 abortable:{
