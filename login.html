@@ -62,7 +62,7 @@ form>label{position:relative;line-height:1}
 input~span{visibility:hidden;overflow-x:hidden;font-size:.75em;position:relative;top:0;color:#1e90ff;font-style:italic}
 input:focus-within:not(:placeholder-shown)+span{position:relative;visibility:visible;width:auto}
 input:focus-within:not(:placeholder-shown)+span+span{color:#1e90ff}
-input[name="dob"]+span{position:absolute}
+input[name="_dob"]+span{position:absolute}
 input+span+span{visibility:visible;color:inherit}
 label input[type="date"]{position:absolute;bottom:0;right:0;visibility:hidden}
 label svg{position:absolute;width:2.25em;height:2.25em;padding:.5em;right:-.5em;bottom:.75em;fill:currentColor;opacity:.5;cursor:pointer}
@@ -113,13 +113,13 @@ input:user-invalid,input.invalid::placeholder{color:#c22e22}
         <span>prénom</span>
       </label>
       <label>
-        <input type="text" name="dob" value="" autocomplete="bday" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
+        <input type="text" name="_dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
         <span>date de naissance au </span>
         <span>format: aaaa-mm-dd &nbsp; ex: 2000-01-31</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M5 22h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7v2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2zM19 8v12H5V8h14zM7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2z"/>
         </svg>
-        <input type="date" name="_dob" value="" tabindex="-1">
+        <input type="date" name="dob" value="" autocomplete="bday" tabindex="-1">
       </label>
       <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
       <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
@@ -148,13 +148,13 @@ input:user-invalid,input.invalid::placeholder{color:#c22e22}
         <span>prénom</span>
       </label>
       <label>
-        <input type="text" name="dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
+        <input type="text" name="_dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
         <span>date de naissance au </span>
         <span>format: aaaa-mm-dd &nbsp; ex: 2000-01-31</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M5 22h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7v2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2zM19 8v12H5V8h14zM7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2z"/>
         </svg>
-        <input type="date" name="_dob" autocomplete="bday" value="" tabindex="-1">
+        <input type="date" name="dob" autocomplete="bday" value="" tabindex="-1">
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
       <label>
@@ -210,9 +210,9 @@ document.querySelector('#register').addEventListener('click',async e=>{
   const emailInput=form.querySelector('input[name="email"]');
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
-  const dobInput=form.querySelector('input[name="dob"]');
-  const dobButton=form.querySelector('input[name="dob"]~svg');
-  const _dobInput=form.querySelector('input[name="_dob"]');
+  const dobInput=form.querySelector('input[name="_dob"]');
+  const dobButton=form.querySelector('input[name="_dob"]~svg');
+  const _dobInput=form.querySelector('input[name="dob"]');
   const maybeRequiredInputs=[emailInput,lastNameInput];
   maybeRequiredInputs.forEach((it,i)=>it.addEventListener('change',_=>{
     if(it.value?.trim()) maybeRequiredInputs.forEach(it=>it.removeAttribute('required'));
@@ -269,9 +269,9 @@ document.querySelector('#register').addEventListener('click',async e=>{
   const emailInput=form.querySelector('input[name="email"]');
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
-  const dobInput=form.querySelector('input[name="dob"]');
-  const dobButton=form.querySelector('input[name="dob"]~svg');
-  const _dobInput=form.querySelector('input[name="_dob"]');
+  const dobInput=form.querySelector('input[name="_dob"]');
+  const dobButton=form.querySelector('input[name="_dob"]~svg');
+  const _dobInput=form.querySelector('input[name="dob"]');
   const otpInput=form.querySelector('input[name="otp"]');
   dobButton.addEventListener('click',e=>{
     e.preventDefault();
