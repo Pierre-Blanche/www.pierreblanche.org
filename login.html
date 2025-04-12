@@ -208,7 +208,7 @@ const adjustDate=s=>{
         const yyyy=first.toString();
         const mm=second.toString().padStart(2,'0');
         const dd=third.toString().padStart(2,'0');
-        return yyyy+mm+dd;
+        return `${yyyy}-${mm}-${dd}`;
       }
     }else{
       if(first>12){
@@ -216,28 +216,28 @@ const adjustDate=s=>{
           const yyyy=third.toString();
           const mm=second.toString().padStart(2,'0');
           const dd=first.toString().padStart(2,'0');
-          return yyyy+mm+dd;
+          return `${yyyy}-${mm}-${dd}`;
         }
       }else if(second>12){
         if(second<32&&first>0&&first<13&&third>1900){
           const yyyy=third.toString();
           const mm=first.toString().padStart(2,'0');
           const dd=second.toString().padStart(2,'0');
-          return yyyy+mm+dd;
+          return `${yyyy}-${mm}-${dd}`;
         }
       }else if(third>1900&&first>0&&first<13&&second>0&&second<13){
         const yyyy=third.toString();
         try{
           const locale=document.querySelector('html').getAttribute('lang');
-          const [first,]=Intl.DateTimeFormat(locale,{dateStyle: 'short'}).formatToParts(defaultDate);
+          const [first,]=Intl.DateTimeFormat(locale,{dateStyle:'short'}).formatToParts(defaultDate);
           if(first.type==='month'){
             const mm=first.toString().padStart(2,'0');
             const dd=second.toString().padStart(2,'0');
-            return yyyy+mm+dd;
+            return `${yyyy}-${mm}-${dd}`;
           }else{
             const mm=second.toString().padStart(2,'0');
             const dd=first.toString().padStart(2,'0');
-            return yyyy+mm+dd;
+            return `${yyyy}-${mm}-${dd}`;
           }
         }catch(_){}
       }
