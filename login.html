@@ -28,7 +28,7 @@ footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
 main{display:grid;grid-template-rows:1fr;grid-template-columns:1fr;place-items:center}
-main>div{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:grid;grid-template-columns:min-content;gap:.5em}
+main>div{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:grid;grid-template-columns:minmax(min-content,clamp(30ch,50vw,48ch));gap:.5em}
 main>div[inert]{opacity:0}
 main>div>*{flex:1}
 input#username{
