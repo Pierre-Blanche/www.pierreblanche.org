@@ -72,7 +72,6 @@ input[type="number"]{-moz-appearance:textfield;margin-top:1em}
 form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
 input:user-invalid,input.invalid::placeholder{color:#c22e22}
-input[type]:invalid[data-com-onepassword-filled]{color:#c22e22;background:none !important}
 </style>
 </head>
 <body>
@@ -149,13 +148,13 @@ input[type]:invalid[data-com-onepassword-filled]{color:#c22e22;background:none !
         <span>prénom</span>
       </label>
       <label>
-        <input type="text" name="dob" value="" autocomplete="bday" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
+        <input type="text" name="dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
         <span>date de naissance au </span>
         <span>format: aaaa-mm-dd &nbsp; ex: 2000-01-31</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M5 22h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7v2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2zM19 8v12H5V8h14zM7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2z"/>
         </svg>
-        <input type="date" name="_dob" value="" tabindex="-1">
+        <input type="date" name="_dob" autocomplete="bday" value="" tabindex="-1">
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" autocomplete="given-name" aria-hidden="true">-->
       <label>
@@ -200,6 +199,14 @@ document.querySelector('#register').addEventListener('click',async e=>{
 });
 {
   const form=otpRequestTab.querySelector('form');
+  const observer=new MutationObserver((mutations)=>{
+    mutations.forEach(mutation=>{
+      if(mutation.type==='attributes'&&mutation.attributeName.startsWith('data-')){
+        mutation.target.removeAttribute(mutation.attributeName);
+      }
+    });
+  });
+  form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes:true}));
   const emailInput=form.querySelector('input[name="email"]');
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
