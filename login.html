@@ -197,13 +197,66 @@ document.querySelector('#register').addEventListener('click',async e=>{
   e.preventDefault();
   selectTab(registerTab)
 });
+const adjustDate=s=>{
+  const split=s.split('/');
+  if(split.length===3){
+    const first=parseInt(split[0].replace(/^0/,''));
+    const second=parseInt(split[1].replace(/^0/,''));
+    const third=parseInt(split[2].replace(/^0/,''));
+    if(first>1900){
+      if(second>0&&second<13&&third>0&&third<32){
+        const yyyy=first.toString();
+        const mm=second.toString().padStart(2,'0');
+        const dd=third.toString().padStart(2,'0');
+        return yyyy+mm+dd;
+      }
+    }else{
+      if(first>12){
+        if(first<32&&second>0&&second<13&&third>1900){
+          const yyyy=third.toString();
+          const mm=second.toString().padStart(2,'0');
+          const dd=first.toString().padStart(2,'0');
+          return yyyy+mm+dd;
+        }
+      }else if(second>12){
+        if(second<32&&first>0&&first<13&&third>1900){
+          const yyyy=third.toString();
+          const mm=first.toString().padStart(2,'0');
+          const dd=second.toString().padStart(2,'0');
+          return yyyy+mm+dd;
+        }
+      }else if(third>1900&&first>0&&first<13&&second>0&&second<13){
+        const yyyy=third.toString();
+        try{
+          const locale=document.querySelector('html').getAttribute('lang');
+          const [first,]=Intl.DateTimeFormat(locale,{dateStyle: 'short'}).formatToParts(defaultDate);
+          if(first.type==='month'){
+            const mm=first.toString().padStart(2,'0');
+            const dd=second.toString().padStart(2,'0');
+            return yyyy+mm+dd;
+          }else{
+            const mm=second.toString().padStart(2,'0');
+            const dd=first.toString().padStart(2,'0');
+            return yyyy+mm+dd;
+          }
+        }catch(_){}
+      }
+    }
+    return null;
+  }
+};
 {
   const form=otpRequestTab.querySelector('form');
   const observer=new MutationObserver((mutations)=>{
     mutations.forEach(mutation=>{
       if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
-        mutation.target.removeAttribute(mutation.attributeName);
-        mutation.target.classList.add('modified');
+        const target=mutation.target;
+        target.removeAttribute(mutation.attributeName);
+        target.classList.add('modified');
+        if(target.getAttribute('name')==='_dob'){
+          const value=adjustDate(target.value);
+          if(value) target.value=value;
+        }
       }
     });
   });
@@ -262,8 +315,13 @@ document.querySelector('#register').addEventListener('click',async e=>{
   const observer=new MutationObserver((mutations)=>{
     mutations.forEach(mutation=>{
       if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
-        mutation.target.removeAttribute(mutation.attributeName);
-        mutation.target.classList.add('modified');
+        const target=mutation.target;
+        target.removeAttribute(mutation.attributeName);
+        target.classList.add('modified');
+        if(target.getAttribute('name')==='_dob'){
+          const value=adjustDate(target.value);
+          if(value) target.value=value;
+        }
       }
     });
   });
