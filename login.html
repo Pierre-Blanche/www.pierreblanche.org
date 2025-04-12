@@ -258,6 +258,14 @@ document.querySelector('#register').addEventListener('click',async e=>{
 }
 {
   const form=registerTab.querySelector('form');
+  const observer=new MutationObserver((mutations)=>{
+    mutations.forEach(mutation=>{
+      if(mutation.type==='attributes'&&mutation.attributeName.startsWith('data-')){
+        mutation.target.removeAttribute(mutation.attributeName);
+      }
+    });
+  });
+  form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes:true}));
   const emailInput=form.querySelector('input[name="email"]');
   const lastNameInput=form.querySelector('input[name="last_name"]');
   const firstNameInput=form.querySelector('input[name="last_name"]');
