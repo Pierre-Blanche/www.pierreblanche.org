@@ -68,7 +68,7 @@ else (async()=>{
     body.append('a',credential.response.getPublicKeyAlgorithm().toString());
     body.append('k',new Blob([credential.response.getPublicKey()],{type: 'binary/octet-stream'}));
     body.append('c',new Blob([credential.response.clientDataJSON],{type: 'binary/octet-stream'}));
-    body.append('d',new Blob([credential.response.authenticatorData],{type: 'binary/octet-stream'}));
+    body.append('d',new Blob([credential.response.getAuthenticatorData()],{type: 'binary/octet-stream'}));
     response=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
     if(response.ok) return;
   }catch(e){console.error(e)} // todo remove
