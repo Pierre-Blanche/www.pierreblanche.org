@@ -46,7 +46,7 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
 const required=()=>{
   const padding=30;
   const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
-  return isNaN(t)||new Date().getTime()+padding>t*1000;
+  return isNaN(t)||new Date().getTime()>(t-padding)*1000;
 }
 if(required()){
   debugger;
