@@ -55,10 +55,10 @@ if(required()){
 else (async()=>{
   debugger;
   const signal=AbortSignal.timeout(30_000);
-  let response=await fetch('/api/credentials',{method:'HEAD',credentials:'include',signal});
+  let response=await fetch('/api/auth/credentials',{method:'HEAD',credentials:'include',signal});
   if(response.ok) return;
   try{
-    response=await fetch('/api/credential_creation_options',{credentials: 'include',signal});
+    response=await fetch('/api/auth/credential_creation_options',{credentials: 'include',signal});
     if(!response.ok) return;
     const publicKey=PublicKeyCredential.parseCreationOptionsFromJSON(await response.json());
     const credential=await navigator.credentials.create({publicKey,signal});
