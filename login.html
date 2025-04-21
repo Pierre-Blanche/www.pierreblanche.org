@@ -31,7 +31,7 @@ main{display:grid;grid-template-rows:1fr;grid-template-columns:1fr;place-items:c
 main>div{grid-row:1;grid-column:1;transition:opacity 200ms linear;display:grid;grid-template-columns:minmax(min-content,clamp(30ch,65vw,48ch));gap:.5em}
 main>div[inert]{opacity:0}
 main>div>*{flex:1}
-input#username{
+input#passkey{
   appearance:none;border:1px solid currentColor;border-radius:.5em;background:rgba(127,127,127,.25);
   color:inherit;font:1em/1.5 __cascadia__;padding:.5em 1em;width:clamp(30ch,65vw,48ch);
 }
@@ -86,7 +86,7 @@ p{text-align:justify;text-wrap:pretty}
   <div>
     <h1>Connexion</h1>
     <form>
-      <input id="username" type="text" name="username" value="" required autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
+      <input id="passkey" type="text" name="passkey" value="" required autocomplete="webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
     </form>
     <div>
       <p>Vous avez déjà un compte, mais vous n'arrivez pas à vous connecter ?</p>
@@ -400,8 +400,12 @@ const adjustDate=s=>{
     }else if(response.status>=500) selectTab(errorTab);
   });
 }
-abortable:{
-  const signal=AbortSignal.timeout(30_000);
+const passkeyInput=document.querySelector('input#passkey');
+let signal=null;
+const prompt=async()=>{
+  if(signal) signal.abort();
+  signal=AbortSignal.timeout(30_000);
+  passkeyInput.onclick=null;
   try{
     const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
     const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
@@ -418,14 +422,16 @@ abortable:{
       const response=await fetch('/api/auth/validate_credential',{method:'POST',body/*,credentials:'include'*/});
       if(response.ok){
         location.assign('/user');
-        break abortable;
+        return;
       }else if(PublicKeyCredential.signalUnknownCredential){
         PublicKeyCredential.signalUnknownCredential({rpId:credential.rpId,credentialId:credential.id});
       }
     }
-  }catch(e){console.error(e)} // todo remove
+  }catch(_){}
+  passkeyInput.onclick=prompt;
   console.error('passkey authentication did not finish correctly');
-}
+};
+prompt();
 </script>
 </body>
 </html>
