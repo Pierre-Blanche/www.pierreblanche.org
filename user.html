@@ -48,19 +48,30 @@ const required=()=>{
   const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
   return isNaN(t)||new Date().getTime()>(t-padding)*1000;
 }
-if(required()){
-  debugger;
-  location.assign('/login');
-}
-else (async()=>{
-  debugger;
-  const signal=AbortSignal.timeout(30_000);
-  let response=await fetch('/api/auth/credentials',{method:'HEAD',credentials:'include',signal});
-  if(response.ok) return;
+const getUser=async()=>{
   try{
-    response=await fetch('/api/auth/credential_creation_options',{credentials: 'include',signal});
-    if(!response.ok) return;
-    const publicKey=PublicKeyCredential.parseCreationOptionsFromJSON(await response.json());
+    let response=await fetch('/api/user',{credentials: 'include'});
+    return await response.json();
+  }catch(_){
+    return null;
+  }
+};
+if(required()){
+  location.assign('/login');
+}else (async()=>{
+  const user=await getUser();
+  if(!user){
+    location.assign('/login');
+    return;
+  }
+  console.log(user);
+  const {first_name,last_name,date_of_birth,email,sms,session_expiration_timestamp,session_from_passkey,admin}=user;
+  if(session_from_passkey) return;
+  const signal=AbortSignal.timeout(30_000);
+  try{
+    const creationResponse=await fetch('/api/auth/credential_creation_options',{credentials: 'include',signal});
+    if(!creationResponse.ok) return;
+    const publicKey=PublicKeyCredential.parseCreationOptionsFromJSON(await creationResponse.json());
     const credential=await navigator.credentials.create({publicKey,signal});
     if(!credential) return;
     const body=new FormData();
@@ -69,9 +80,9 @@ else (async()=>{
     body.append('k',new Blob([credential.response.getPublicKey()],{type: 'binary/octet-stream'}));
     body.append('c',new Blob([credential.response.clientDataJSON],{type: 'binary/octet-stream'}));
     body.append('d',new Blob([credential.response.getAuthenticatorData()],{type: 'binary/octet-stream'}));
-    response=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
-    if(response.ok) return;
-  }catch(e){console.error(e)} // todo remove
+    const recordResponse=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
+    if(recordResponse.ok) return;
+  }catch(_){}
   console.error('new passkey flow did not finish correctly');
 })();
 </script>
