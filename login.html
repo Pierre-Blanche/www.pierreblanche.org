@@ -178,267 +178,278 @@ p{text-align:justify;text-wrap:pretty}
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
 <script type="module">
-const defaultDate=new Date(2000,0,31,12,0,0,0);
-const tabs=[...document.querySelectorAll('main>div')];
-const [loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
-const selectTab=tab=>tabs.forEach(it=>{
-  it===tab?it.removeAttribute('inert'):it.setAttribute('inert','');
-  it.querySelectorAll('input:is([type="text"],[type="email"],[type="number"])').forEach(it=>it.value='');
-  it.querySelectorAll('input[type="date"]').forEach(it=>it.valueAsDate=defaultDate);
-});
-document.querySelectorAll('input[name="cancel"]').forEach(it=>it.addEventListener('click',e=>{
-  e.preventDefault();
-  selectTab(loginTab);
-}));
-document.querySelector('#otp').addEventListener('click',async e=>{
-  e.preventDefault();
-  selectTab(otpRequestTab);
-});
-document.querySelector('#register').addEventListener('click',async e=>{
-  e.preventDefault();
-  selectTab(registerTab)
-});
-const adjustDate=s=>{
-  const split=s.split('/');
-  if(split.length===3){
-    const first=parseInt(split[0].replace(/^0/,''));
-    const second=parseInt(split[1].replace(/^0/,''));
-    const third=parseInt(split[2].replace(/^0/,''));
-    if(first>1900){
-      if(second>0&&second<13&&third>0&&third<32){
-        const yyyy=first.toString();
-        const mm=second.toString().padStart(2,'0');
-        const dd=third.toString().padStart(2,'0');
-        return `${yyyy}-${mm}-${dd}`;
-      }
-    }else{
-      if(first>12){
-        if(first<32&&second>0&&second<13&&third>1900){
-          const yyyy=third.toString();
+const required=()=>{
+  const padding=30;
+  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
+  return isNaN(t)||new Date().getTime()>(t-padding)*1000;
+}
+if(!required()){
+  location.assign('/user');
+}else{
+  const defaultDate=new Date(2000,0,31,12,0,0,0);
+  const tabs=[...document.querySelectorAll('main>div')];
+  const [loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
+  const selectTab=tab=>tabs.forEach(it=>{
+    it===tab?it.removeAttribute('inert'):it.setAttribute('inert','');
+    it.querySelectorAll('input:is([type="text"],[type="email"],[type="number"])').forEach(it=>it.value='');
+    it.querySelectorAll('input[type="date"]').forEach(it=>it.valueAsDate=defaultDate);
+  });
+  document.querySelectorAll('input[name="cancel"]').forEach(it=>it.addEventListener('click',e=>{
+    e.preventDefault();
+    selectTab(loginTab);
+  }));
+  document.querySelector('#otp').addEventListener('click',async e=>{
+    e.preventDefault();
+    selectTab(otpRequestTab);
+  });
+  document.querySelector('#register').addEventListener('click',async e=>{
+    e.preventDefault();
+    selectTab(registerTab)
+  });
+  const adjustDate=s=>{
+    const split=s.split('/');
+    if(split.length===3){
+      const first=parseInt(split[0].replace(/^0/,''));
+      const second=parseInt(split[1].replace(/^0/,''));
+      const third=parseInt(split[2].replace(/^0/,''));
+      if(first>1900){
+        if(second>0&&second<13&&third>0&&third<32){
+          const yyyy=first.toString();
           const mm=second.toString().padStart(2,'0');
-          const dd=first.toString().padStart(2,'0');
+          const dd=third.toString().padStart(2,'0');
           return `${yyyy}-${mm}-${dd}`;
         }
-      }else if(second>12){
-        if(second<32&&first>0&&first<13&&third>1900){
-          const yyyy=third.toString();
-          const mm=first.toString().padStart(2,'0');
-          const dd=second.toString().padStart(2,'0');
-          return `${yyyy}-${mm}-${dd}`;
-        }
-      }else if(third>1900&&first>0&&first<13&&second>0&&second<13){
-        const yyyy=third.toString();
-        try{
-          const locale=document.querySelector('html').getAttribute('lang');
-          const [first,]=Intl.DateTimeFormat(locale,{dateStyle:'short'}).formatToParts(defaultDate);
-          if(first.type==='month'){
-            const mm=first.toString().padStart(2,'0');
-            const dd=second.toString().padStart(2,'0');
-            return `${yyyy}-${mm}-${dd}`;
-          }else{
+      }else{
+        if(first>12){
+          if(first<32&&second>0&&second<13&&third>1900){
+            const yyyy=third.toString();
             const mm=second.toString().padStart(2,'0');
             const dd=first.toString().padStart(2,'0');
             return `${yyyy}-${mm}-${dd}`;
           }
-        }catch(_){}
-      }
-    }
-    return null;
-  }
-};
-{
-  const form=otpRequestTab.querySelector('form');
-  const observer=new MutationObserver((mutations)=>{
-    mutations.forEach(mutation=>{
-      if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
-        const target=mutation.target;
-        target.removeAttribute(mutation.attributeName);
-        target.classList.add('modified');
-        if(target.getAttribute('name')==='_dob'){
-          const value=adjustDate(target.value);
-          if(value) target.value=value;
+        }else if(second>12){
+          if(second<32&&first>0&&first<13&&third>1900){
+            const yyyy=third.toString();
+            const mm=first.toString().padStart(2,'0');
+            const dd=second.toString().padStart(2,'0');
+            return `${yyyy}-${mm}-${dd}`;
+          }
+        }else if(third>1900&&first>0&&first<13&&second>0&&second<13){
+          const yyyy=third.toString();
+          try{
+            const locale=document.querySelector('html').getAttribute('lang');
+            const [first,]=Intl.DateTimeFormat(locale,{dateStyle: 'short'}).formatToParts(defaultDate);
+            if(first.type==='month'){
+              const mm=first.toString().padStart(2,'0');
+              const dd=second.toString().padStart(2,'0');
+              return `${yyyy}-${mm}-${dd}`;
+            }else{
+              const mm=second.toString().padStart(2,'0');
+              const dd=first.toString().padStart(2,'0');
+              return `${yyyy}-${mm}-${dd}`;
+            }
+          }catch(_){
+          }
         }
       }
+      return null;
+    }
+  };
+  {
+    const form=otpRequestTab.querySelector('form');
+    const observer=new MutationObserver((mutations)=>{
+      mutations.forEach(mutation=>{
+        if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
+          const target=mutation.target;
+          target.removeAttribute(mutation.attributeName);
+          target.classList.add('modified');
+          if(target.getAttribute('name')==='_dob'){
+            const value=adjustDate(target.value);
+            if(value) target.value=value;
+          }
+        }
+      });
     });
-  });
-  form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes:true}));
-  const emailInput=form.querySelector('input[name="email"]');
-  const lastNameInput=form.querySelector('input[name="last_name"]');
-  const firstNameInput=form.querySelector('input[name="first_name"]');
-  const dobInput=form.querySelector('input[name="_dob"]');
-  const dobButton=form.querySelector('input[name="_dob"]~svg');
-  const _dobInput=form.querySelector('input[name="dob"]');
-  const maybeRequiredInputs=[emailInput,lastNameInput];
-  maybeRequiredInputs.forEach((it,i)=>it.addEventListener('change',_=>{
-    if(it.value?.trim()) maybeRequiredInputs.forEach(it=>it.removeAttribute('required'));
-    else if(!it[(i+1)%2].value?.trim()) maybeRequiredInputs.forEach(it=>it.setAttribute('required',''));
-  }));
-  dobButton.addEventListener('click',e=>{
+    form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes: true}));
+    const emailInput=form.querySelector('input[name="email"]');
+    const lastNameInput=form.querySelector('input[name="last_name"]');
+    const firstNameInput=form.querySelector('input[name="first_name"]');
+    const dobInput=form.querySelector('input[name="_dob"]');
+    const dobButton=form.querySelector('input[name="_dob"]~svg');
+    const _dobInput=form.querySelector('input[name="dob"]');
+    const maybeRequiredInputs=[emailInput,lastNameInput];
+    maybeRequiredInputs.forEach((it,i)=>it.addEventListener('change',_=>{
+      if(it.value?.trim()) maybeRequiredInputs.forEach(it=>it.removeAttribute('required'));
+      else if(!it[(i+1)%2].value?.trim()) maybeRequiredInputs.forEach(it=>it.setAttribute('required',''));
+    }));
+    dobButton.addEventListener('click',e=>{
       e.preventDefault();
       e.stopPropagation();
       _dobInput.showPicker();
-  });
-  _dobInput.valueAsDate=defaultDate;
-  _dobInput.addEventListener('change',_=>{
-    const dob=_dobInput?.valueAsDate;
-    if(dob){
-      const yyyy=dob.getUTCFullYear().toString();
-      const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
-      const dd=(dob.getUTCDate()).toString().padStart(2,"0");
-      dobInput.value=`${yyyy}-${mm}-${dd}`;
-    }
-  });
-  form.addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const body=new FormData();
-    const email=emailInput?.value?.trim();
-    if(email) body.append('email',email);
-    const lastName=lastNameInput?.value?.trim();
-    if(lastName) body.append('last_name',lastName);
-    const firstName=firstNameInput?.value?.trim();
-    if(firstName) body.append('first_name',firstName);
-    const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
-    const y=parseInt(yyyy);
-    const m=parseInt(mm?.replace(/^0/,''));
-    const d=parseInt(dd?.replace(/^0/,''));
-    if(!isNaN(y)&&!isNaN(m)&&!isNaN(d)&&y<new Date().getFullYear()&&y>1900&&m>0&&m<13&&d>0&&d<32){
-      const yyyy=y.toString();
-      const mm=m.toString().padStart(2,'0');
-      const dd=d.toString().padStart(2,'0');
-      body.append('dob',yyyy+mm+dd);
-    }
-    const response=await fetch('/api/otp',{method:'POST',body});
-    selectTab(response.ok?otpSentTab:errorTab);
-  });
-}
-{
-  const form=registerTab.querySelector('form');
-  const observer=new MutationObserver((mutations)=>{
-    mutations.forEach(mutation=>{
-      if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
-        const target=mutation.target;
-        target.removeAttribute(mutation.attributeName);
-        target.classList.add('modified');
-        if(target.getAttribute('name')==='_dob'){
-          const value=adjustDate(target.value);
-          if(value) target.value=value;
-        }
+    });
+    _dobInput.valueAsDate=defaultDate;
+    _dobInput.addEventListener('change',_=>{
+      const dob=_dobInput?.valueAsDate;
+      if(dob){
+        const yyyy=dob.getUTCFullYear().toString();
+        const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
+        const dd=(dob.getUTCDate()).toString().padStart(2,"0");
+        dobInput.value=`${yyyy}-${mm}-${dd}`;
       }
     });
-  });
-  form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes:true}));
-  const emailInput=form.querySelector('input[name="email"]');
-  const lastNameInput=form.querySelector('input[name="last_name"]');
-  const firstNameInput=form.querySelector('input[name="first_name"]');
-  const dobInput=form.querySelector('input[name="_dob"]');
-  const dobButton=form.querySelector('input[name="_dob"]~svg');
-  const _dobInput=form.querySelector('input[name="dob"]');
-  const otpInput=form.querySelector('input[name="otp"]');
-  dobButton.addEventListener('click',e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    _dobInput.showPicker();
-  });
-  _dobInput.valueAsDate=new Date(2000,0,31,12,0,0,0);
-  _dobInput.addEventListener('change',_=>{
-    const dob=_dobInput?.valueAsDate;
-    if(dob){
-      const yyyy=dob.getUTCFullYear().toString();
-      const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
-      const dd=(dob.getUTCDate()).toString().padStart(2,"0");
-      dobInput.value=`${yyyy}-${mm}-${dd}`;
-    }
-  });
-  form.addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const body=new FormData();
-    const email=emailInput?.value?.trim();
-    if(!email) return;
-    body.append('email',email);
-    const lastName=lastNameInput?.value?.trim();
-    if(!lastName) return;
-    body.append('last_name',lastName);
-    const firstName=firstNameInput?.value?.trim();
-    if(!firstName) return;
-    body.append('first_name',firstName);
-    const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
-    const y=parseInt(yyyy);
-    const m=parseInt(mm?.replace(/^0/,''));
-    const d=parseInt(dd?.replace(/^0/,''));
-    if(isNaN(y)||isNaN(m)||isNaN(d)&&y>=new Date().getFullYear()||y<1901||m<1&&m>12&&d<1&&d>31) return;
-    const dob=`${y}${m.toString().padStart(2,'0')}${d.toString().padStart(2,'0')}`;
-    body.append('dob',dob);
-    const otp=otpInput?.value?.trim();
-    if(otp) body.append('otp',otp);
-    const response=await fetch('/api/user',{method:'PUT',body});
-    if(response.ok) selectTab(registerConfirmationTab);
-    else if(response.status===403){
-      otpInput.classList.add('invalid');
-      otpInput.value='';
-      otpInput.placeholder='code invalide';
-      const reset=()=>{
-        otpInput.oninput=null;
-        otpInput.classList.remove('invalid');
-        otpInput.placeholder='code de pré-autorisation';
-      };
-      const timeout=setTimeout(reset,3000);
-      otpInput.oninput=_=>{
-        clearInterval(timeout);
-        reset();
-      };
-    }else if(response.status===400){
-      emailInput.classList.add('invalid');
-      const reset=()=>{
-        emailInput.oninput=null;
-        emailInput.classList.remove('invalid');
-      };
-      const timeout=setTimeout(reset,3000);
-      emailInput.oninput=_=>{
-        clearInterval(timeout);
-        reset();
-      };
-    }else if(response.status>=500) selectTab(errorTab);
-  });
-}
-const passkeyInput=document.querySelector('input#passkey');
-let abortController=null;
-const prompt=async(e)=>{
-  if(e) e.preventDefault();
-  if(abortController) abortController.abort();
-  abortController=new AbortController();
-  const signal=abortController.signal;
-  setTimeout(()=>signal.abort(),30_000);
-  passkeyInput.onclick=null;
-  passkeyInput.onkeydown=null;
-  passkeyInput.onchange=null;
-  try{
-    const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
-    const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
-    const options={signal,publicKey};
-    if(PublicKeyCredential.isConditionalMediationAvailable()) options.mediation='conditional';
-    const credential=await navigator.credentials.get({signal,publicKey});
-    if(credential){
+    form.addEventListener('submit',async(e)=>{
+      e.preventDefault();
       const body=new FormData();
-      body.append('i',new Blob([credential.rawId],{type:'binary/octet-stream'}));
-      body.append('s',new Blob([credential.response.signature],{type:'binary/octet-stream'}));
-      body.append('u',new Blob([credential.response.userHandle],{type:'binary/octet-stream'}));
-      body.append('c',new Blob([credential.response.clientDataJSON],{type:'binary/octet-stream'}));
-      body.append('d',new Blob([credential.response.authenticatorData],{type:'binary/octet-stream'}));
-      const response=await fetch('/api/auth/validate_credential',{method:'POST',body/*,credentials:'include'*/});
-      if(response.ok){
-        location.assign('/user');
-        return;
-      }else if(PublicKeyCredential.signalUnknownCredential){
-        PublicKeyCredential.signalUnknownCredential({rpId:credential.rpId,credentialId:credential.id});
+      const email=emailInput?.value?.trim();
+      if(email) body.append('email',email);
+      const lastName=lastNameInput?.value?.trim();
+      if(lastName) body.append('last_name',lastName);
+      const firstName=firstNameInput?.value?.trim();
+      if(firstName) body.append('first_name',firstName);
+      const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
+      const y=parseInt(yyyy);
+      const m=parseInt(mm?.replace(/^0/,''));
+      const d=parseInt(dd?.replace(/^0/,''));
+      if(!isNaN(y)&& !isNaN(m)&& !isNaN(d)&&y<new Date().getFullYear()&&y>1900&&m>0&&m<13&&d>0&&d<32){
+        const yyyy=y.toString();
+        const mm=m.toString().padStart(2,'0');
+        const dd=d.toString().padStart(2,'0');
+        body.append('dob',yyyy+mm+dd);
       }
+      const response=await fetch('/api/otp',{method: 'POST',body});
+      selectTab(response.ok?otpSentTab:errorTab);
+    });
+  }
+  {
+    const form=registerTab.querySelector('form');
+    const observer=new MutationObserver((mutations)=>{
+      mutations.forEach(mutation=>{
+        if(mutation.type==='attributes'&&(mutation.attributeName.startsWith('data-')||mutation.attributeName==='style')){
+          const target=mutation.target;
+          target.removeAttribute(mutation.attributeName);
+          target.classList.add('modified');
+          if(target.getAttribute('name')==='_dob'){
+            const value=adjustDate(target.value);
+            if(value) target.value=value;
+          }
+        }
+      });
+    });
+    form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes: true}));
+    const emailInput=form.querySelector('input[name="email"]');
+    const lastNameInput=form.querySelector('input[name="last_name"]');
+    const firstNameInput=form.querySelector('input[name="first_name"]');
+    const dobInput=form.querySelector('input[name="_dob"]');
+    const dobButton=form.querySelector('input[name="_dob"]~svg');
+    const _dobInput=form.querySelector('input[name="dob"]');
+    const otpInput=form.querySelector('input[name="otp"]');
+    dobButton.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      _dobInput.showPicker();
+    });
+    _dobInput.valueAsDate=new Date(2000,0,31,12,0,0,0);
+    _dobInput.addEventListener('change',_=>{
+      const dob=_dobInput?.valueAsDate;
+      if(dob){
+        const yyyy=dob.getUTCFullYear().toString();
+        const mm=(dob.getUTCMonth()+1).toString().padStart(2,"0");
+        const dd=(dob.getUTCDate()).toString().padStart(2,"0");
+        dobInput.value=`${yyyy}-${mm}-${dd}`;
+      }
+    });
+    form.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const body=new FormData();
+      const email=emailInput?.value?.trim();
+      if(!email) return;
+      body.append('email',email);
+      const lastName=lastNameInput?.value?.trim();
+      if(!lastName) return;
+      body.append('last_name',lastName);
+      const firstName=firstNameInput?.value?.trim();
+      if(!firstName) return;
+      body.append('first_name',firstName);
+      const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
+      const y=parseInt(yyyy);
+      const m=parseInt(mm?.replace(/^0/,''));
+      const d=parseInt(dd?.replace(/^0/,''));
+      if(isNaN(y)||isNaN(m)||isNaN(d)&&y>=new Date().getFullYear()||y<1901||m<1&&m>12&&d<1&&d>31) return;
+      const dob=`${y}${m.toString().padStart(2,'0')}${d.toString().padStart(2,'0')}`;
+      body.append('dob',dob);
+      const otp=otpInput?.value?.trim();
+      if(otp) body.append('otp',otp);
+      const response=await fetch('/api/user',{method: 'PUT',body});
+      if(response.ok) selectTab(registerConfirmationTab);
+      else if(response.status===403){
+        otpInput.classList.add('invalid');
+        otpInput.value='';
+        otpInput.placeholder='code invalide';
+        const reset=()=>{
+          otpInput.oninput=null;
+          otpInput.classList.remove('invalid');
+          otpInput.placeholder='code de pré-autorisation';
+        };
+        const timeout=setTimeout(reset,3000);
+        otpInput.oninput=_=>{
+          clearInterval(timeout);
+          reset();
+        };
+      }else if(response.status===400){
+        emailInput.classList.add('invalid');
+        const reset=()=>{
+          emailInput.oninput=null;
+          emailInput.classList.remove('invalid');
+        };
+        const timeout=setTimeout(reset,3000);
+        emailInput.oninput=_=>{
+          clearInterval(timeout);
+          reset();
+        };
+      }else if(response.status>=500) selectTab(errorTab);
+    });
+  }
+  const passkeyInput=document.querySelector('input#passkey');
+  let abortController=null;
+  const prompt=async(e)=>{
+    if(e) e.preventDefault();
+    if(abortController) abortController.abort();
+    abortController=new AbortController();
+    const signal=abortController.signal;
+    setTimeout(()=>signal.abort(),30_000);
+    passkeyInput.onclick=null;
+    passkeyInput.onkeydown=null;
+    passkeyInput.onchange=null;
+    try{
+      const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
+      const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
+      const options={signal,publicKey};
+      if(PublicKeyCredential.isConditionalMediationAvailable()) options.mediation='conditional';
+      const credential=await navigator.credentials.get({signal,publicKey});
+      if(credential){
+        const body=new FormData();
+        body.append('i',new Blob([credential.rawId],{type: 'binary/octet-stream'}));
+        body.append('s',new Blob([credential.response.signature],{type: 'binary/octet-stream'}));
+        body.append('u',new Blob([credential.response.userHandle],{type: 'binary/octet-stream'}));
+        body.append('c',new Blob([credential.response.clientDataJSON],{type: 'binary/octet-stream'}));
+        body.append('d',new Blob([credential.response.authenticatorData],{type: 'binary/octet-stream'}));
+        const response=await fetch('/api/auth/validate_credential',{method: 'POST',body/*,credentials:'include'*/});
+        if(response.ok){
+          location.assign('/user');
+          return;
+        }else if(PublicKeyCredential.signalUnknownCredential){
+          PublicKeyCredential.signalUnknownCredential({rpId: credential.rpId,credentialId: credential.id});
+        }
+      }
+    }catch(_){
     }
-  }catch(_){}
-  passkeyInput.onclick=prompt;
-  passkeyInput.onkeydown=prompt;
-  passkeyInput.onchange=prompt;
-  console.error('passkey authentication did not finish correctly');
-};
-prompt();
+    passkeyInput.onclick=prompt;
+    passkeyInput.onkeydown=prompt;
+    passkeyInput.onchange=prompt;
+    console.error('passkey authentication did not finish correctly');
+  };
+  prompt();
+}
 </script>
 </body>
 </html>
