@@ -86,7 +86,7 @@ p{text-align:justify;text-wrap:pretty}
   <div>
     <h1>Connexion</h1>
     <form>
-      <input id="passkey" type="text" name="passkey" value="" required autocomplete="webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
+      <input id="passkey" type="text" name="webauthn" value="" required autocomplete="on webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
     </form>
     <div>
       <p>Vous avez déjà un compte, mais vous n'arrivez pas à vous connecter ?</p>
@@ -401,10 +401,12 @@ const adjustDate=s=>{
   });
 }
 const passkeyInput=document.querySelector('input#passkey');
-let signal=null;
+let abortController=null;
 const prompt=async()=>{
-  if(signal) signal.abort();
-  signal=AbortSignal.timeout(30_000);
+  if(abortController) abortController.abort();
+  abortController=new AbortController();
+  const signal=abortController.signal;
+  setTimeout(()=>signal.abort(),30_000);
   passkeyInput.onclick=null;
   try{
     const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
