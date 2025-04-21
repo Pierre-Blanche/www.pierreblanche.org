@@ -86,7 +86,7 @@ p{text-align:justify;text-wrap:pretty}
   <div>
     <h1>Connexion</h1>
     <form>
-      <input id="passkey" type="text" name="webauthn" value="" required autocomplete="on webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
+      <input id="passkey" type="text" name="webauthn" value="" required autocomplete="username webauthn" placeholder="clé d'accès" aria-label="clé d'accès" autofocus tabindex="1">
     </form>
     <div>
       <p>Vous avez déjà un compte, mais vous n'arrivez pas à vous connecter ?</p>
@@ -402,12 +402,15 @@ const adjustDate=s=>{
 }
 const passkeyInput=document.querySelector('input#passkey');
 let abortController=null;
-const prompt=async()=>{
+const prompt=async(e)=>{
+  if(e) e.preventDefault();
   if(abortController) abortController.abort();
   abortController=new AbortController();
   const signal=abortController.signal;
   setTimeout(()=>signal.abort(),30_000);
   passkeyInput.onclick=null;
+  passkeyInput.onkeydown=null;
+  passkeyInput.onchange=null;
   try{
     const response=await fetch('/api/auth/credential_request_options',{/*credentials:'include',*/signal});
     const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
@@ -431,6 +434,8 @@ const prompt=async()=>{
     }
   }catch(_){}
   passkeyInput.onclick=prompt;
+  passkeyInput.onkeydown=prompt;
+  passkeyInput.onchange=prompt;
   console.error('passkey authentication did not finish correctly');
 };
 prompt();
