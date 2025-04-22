@@ -73,7 +73,10 @@ const required=()=>{
 const getUser=async()=>{
   try{
     let response=await fetch('/api/user',{credentials:'include'});
-    return await response.json();
+    const user=await response.json();
+    const dob=user.date_of_birth.toString();
+    user.date_of_birth=`${dob.substring(0,4)}-${dob.substring(4,6)}-${dob.substring(6,8)}`;
+    return user;
   }catch(_){
     return null;
   }
