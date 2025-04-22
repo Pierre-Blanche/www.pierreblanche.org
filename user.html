@@ -10,6 +10,7 @@
 <link rel="manifest" href="/pwa.json">
 <link rel="canonical" href="https://pierre-blanche-escalade.fr">
 <link rel="stylesheet" href="/fonts/barlow.css">
+<link rel="stylesheet" href="/fonts/cascadia.css">
 <style>
 :where(*){margin:0;padding:0;box-sizing:border-box}
 html{
@@ -26,7 +27,17 @@ footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-v
 footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;text-align:center}
+main{display:grid;font-variation-settings:"wght" 80,"wdth" 500;grid-template-columns:auto;grid-template-rows:auto;gap:.25em;place-items:start}
+main>*{display:flex;line-height:1em;gap:.5em;place-items:center}
+main>*:nth-child(1){font-size:2em;font-variation-settings:"wght" 100,"wdth" 400}
+main>*:nth-child(2){font-size:3em;font-variation-settings:"wght" 150,"wdth" 500}
+main>*:nth-child(3){font-size:1em;padding-block:1em}
+main>*:nth-child(4){font:200 1em/1 __cascadia__;}
+main>*:nth-child(5){font-size:.75em;line-height:1.5;padding-block:1em;max-width:30ch}
+main>*:empty{display:none}
+main svg{width:1em;height:1em;opacity:.75;cursor:pointer}
+main svg:hover{opacity:1}
+main svg:hover .highlight{fill:#1e90ff}
 </style>
 </head>
 <body>
@@ -36,7 +47,18 @@ main{display:grid;font-variation-settings:"wght" 80, "wdth" 500;place-items:cent
   <a href="/api/auth/disconnect_user">Déconnexion</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
-<main>Profile
+<main>
+  <div id="first_name">Jerome</div>
+  <div id="last_name">DAVID</div>
+  <div id="date_of_birth">1977-05-22</div>
+  <div>
+    <span id="email">programingjd@gmail.com</span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+      <path fill="currentColor" stroke="currentColor" d="m11.6 7.66 2.09-2.1c.42-.4.41-1.06 0-1.47L12.04 2.3a1.05 1.05 0 0 0-1.5 0L8.4 4.44z"/>
+      <path fill="none" class="highlight" stroke="currentColor" d="M11.6 7.66 5.74 13.5H2.5v-3.18l5.89-5.88"/>
+    </svg>
+  </div>
+  <div id="session_info"></div>
 </main>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
@@ -50,7 +72,7 @@ const required=()=>{
 }
 const getUser=async()=>{
   try{
-    let response=await fetch('/api/user',{credentials: 'include'});
+    let response=await fetch('/api/user',{credentials:'include'});
     return await response.json();
   }catch(_){
     return null;
@@ -65,21 +87,49 @@ if(required()){
     return;
   }
   console.log(user);
-  const {first_name,last_name,date_of_birth,email,sms,session_expiration_timestamp,session_from_passkey,admin}=user;
+  const {/*first_name,last_name,date_of_birth,email,sms,*/session_expiration_timestamp,session_from_passkey,admin}=user;
+  Object.entries(user).forEach(([k,v])=>{
+    const el=document.getElementById(k);
+    if(el) el.textContent=v;
+  });
+  const sessionInfoElement=document.getElementById('session_info');
+  const expirationDate=new Date(session_expiration_timestamp*1000);
+  const {year,month,day,hour,minute}=Object.fromEntries(new Intl.DateTimeFormat(
+    document.querySelector('html').getAttribute('lang')??'fr-FR',
+    {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}
+  ).formatToParts(expirationDate).map(it=>[it.type,it.value]));
+  if(session_from_passkey){
+    sessionInfoElement.textContent=`Connexion par clé d'accès valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
+  }else{
+    sessionInfoElement.textContent=`Connexion par lien unique valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
+  }
   if(session_from_passkey) return;
   const signal=AbortSignal.timeout(30_000);
+  const metadata=JSON.stringify({
+    uuid:crypto.randomUUID()
+  });
   try{
-    const creationResponse=await fetch('/api/auth/credential_creation_options',{credentials: 'include',signal});
+    const creationResponse=await fetch(
+      '/api/auth/credential_creation_options',
+      {
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify(metadata),
+        credentials:'include',
+        signal
+      }
+    );
     if(!creationResponse.ok) return;
     const publicKey=PublicKeyCredential.parseCreationOptionsFromJSON(await creationResponse.json());
     const credential=await navigator.credentials.create({publicKey,signal});
     if(!credential) return;
     const body=new FormData();
-    body.append('i',new Blob([credential.rawId],{type: 'binary/octet-stream'}));
+    body.append('m',metadata);
+    body.append('i',new Blob([credential.rawId],{type:'binary/octet-stream'}));
     body.append('a',credential.response.getPublicKeyAlgorithm().toString());
-    body.append('k',new Blob([credential.response.getPublicKey()],{type: 'binary/octet-stream'}));
-    body.append('c',new Blob([credential.response.clientDataJSON],{type: 'binary/octet-stream'}));
-    body.append('d',new Blob([credential.response.getAuthenticatorData()],{type: 'binary/octet-stream'}));
+    body.append('k',new Blob([credential.response.getPublicKey()],{type:'binary/octet-stream'}));
+    body.append('c',new Blob([credential.response.clientDataJSON],{type:'binary/octet-stream'}));
+    body.append('d',new Blob([credential.response.getAuthenticatorData()],{type:'binary/octet-stream'}));
     const recordResponse=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
     if(recordResponse.ok) return;
   }catch(_){}
