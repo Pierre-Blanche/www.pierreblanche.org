@@ -34,6 +34,7 @@ main>*:nth-child(2){font-size:3em;font-variation-settings:"wght" 150,"wdth" 500}
 main>*:nth-child(3){font-size:1em;padding-block:1em}
 main>*:nth-child(4){font:200 1em/1 __cascadia__;}
 main>*:nth-child(5){font-size:.75em;line-height:1.5;padding-block:1em;max-width:30ch}
+main>*:nth-child(6){font-size:1em;padding-block:1em;color:#a33b2f}
 main>*:empty{display:none}
 main svg{width:1em;height:1em;opacity:.75;cursor:pointer}
 main svg:hover{opacity:1}
@@ -59,6 +60,7 @@ main svg:hover .highlight{fill:#1e90ff}
     </svg>
   </div>
   <div id="session_info"></div>
+  <div id="admin"></div>
 </main>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
@@ -105,6 +107,9 @@ if(required()){
     sessionInfoElement.textContent=`Connexion par clé d'accès valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
   }else{
     sessionInfoElement.textContent=`Connexion par lien unique valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
+  }
+  if(admin){
+    document.getElementById('admin').textContent='Administrateur';
   }
   if(session_from_passkey) return;
   const signal=AbortSignal.timeout(30_000);
