@@ -420,16 +420,14 @@ if(!required()){
     passkeyInput.onclick=null;
     passkeyInput.onkeydown=null;
     passkeyInput.onchange=null;
-    const metadata=JSON.stringify({
-      uuid: crypto.randomUUID()
-    });
+    const metadata=JSON.stringify({uuid:crypto.randomUUID()});
     try{
       const response=await fetch(
         '/api/auth/credential_request_options',
         {
           method:'POST',
           headers:{'content-type':'application/json'},
-          body:JSON.stringify(metadata),
+          body:metadata,
           /*credentials:'include',*/
           signal
         });

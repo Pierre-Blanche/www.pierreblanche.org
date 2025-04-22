@@ -108,16 +108,14 @@ if(required()){
   }
   if(session_from_passkey) return;
   const signal=AbortSignal.timeout(30_000);
-  const metadata=JSON.stringify({
-    uuid:crypto.randomUUID()
-  });
+  const metadata=JSON.stringify({uuid:crypto.randomUUID()});
   try{
     const creationResponse=await fetch(
       '/api/auth/credential_creation_options',
       {
         method:'POST',
         headers:{'content-type':'application/json'},
-        body:JSON.stringify(metadata),
+        body:metadata,
         credentials:'include',
         signal
       }
