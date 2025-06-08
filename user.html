@@ -137,7 +137,9 @@ if(required()){
     body.append('c',new Blob([credential.response.clientDataJSON],{type:'binary/octet-stream'}));
     body.append('d',new Blob([credential.response.getAuthenticatorData()],{type:'binary/octet-stream'}));
     const recordResponse=await fetch('/api/auth/record_credential',{method:'POST',body,credentials:'include'});
-    if(recordResponse.ok) return;
+    if(recordResponse.ok){
+      location.reload();
+    }
   }catch(_){}
   console.error('new passkey flow did not finish correctly');
 })();
