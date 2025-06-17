@@ -92,7 +92,7 @@ if(required()){
     return;
   }
   console.log(user);
-  const {first_name,last_name,date_of_birth,email,sms,session_expiration_timestamp,session_from_passkey,admin}=user;
+  const {session_expiration_timestamp,session_from_passkey,admin}=user;
   Object.entries(user).forEach(([k,v])=>{
     const el=document.getElementById(k);
     if(el) el.textContent=v;
