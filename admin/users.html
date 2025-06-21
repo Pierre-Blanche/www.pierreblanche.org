@@ -58,7 +58,7 @@ const getUsers=async()=>{
     debugger;
     const users=await response.json();
     users.forEach(user=>{
-      const dob=users.date_of_birth.toString();
+      const dob=user.date_of_birth.toString();
       user.date_of_birth=`${dob.substring(0,4)}-${dob.substring(4,6)}-${dob.substring(6,8)}`;
     });
     return users;
