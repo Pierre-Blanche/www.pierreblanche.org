@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>🫅️Pierre Blanche</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#282828">
+<link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple.png">
+<link rel="manifest" href="/pwa.json">
+<link rel="canonical" href="https://pierre-blanche-escalade.fr">
+<link rel="stylesheet" href="/fonts/barlow.css">
+<style>
+:where(*){margin:0;padding:0;box-sizing:border-box}
+html{
+  width:100%;height:100%;background:#2a2a2a;color:#ccc;color-scheme:dark;
+  font:clamp(7pt,6pt + .75vw + .65vh,32pt)/1.5 __barlow__;
+  font-variation-settings:"wght" 50;
+}
+body{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr;padding:1em 2em 2em 2em}
+body>*{grid-column:1;grid-row:2;place-self:center}
+header{place-self:stretch;grid-row:1;display:grid;grid-template-columns:auto 1fr auto;font-variation-settings:"wght" 40;font-size:max(1em,16pt)}
+header>a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
+header>a[href]:hover{color:#fff;text-decoration-color:currentColor}
+body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
+main{place-self:stretch;display:grid;place-items:center;grid-template-rows:auto 1fr}
+h1{font-size:1.5em;line-height:1.25;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
+main>table{--column-count:0;display:grid;grid-template-columns:repeat(var(--column-count),max-content);grid-auto-rows:2em;border:1px solid currentColor;background:#222}
+main>thead,tbody{display:contents}
+main tr{display:grid;grid-template-columns:subgrid;grid-column:1/-1;transform:translateY(0);transition:transform 1s ease-in-out}
+td,th{display:grid;place-items:center start;padding:0 .5em;border:1px solid currentColor}
+th{background:#3a3a3a;color:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <a href="/admin">Gestion du club</a>
+  <div></div>
+  <div></div>
+</header>
+<img src="/favicon.svg" alt="Logo de Pierre Blanche">
+<main>
+  <h1>Liste des licenciés</h1>
+  <table>
+    <thead><tr></tr></thead>
+    <tbody></tbody>
+  </table>
+</main>
+<script type="module">
+const required=()=>{
+  const padding=30;
+  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
+  return isNaN(t)||new Date().getTime()>(t-padding)*1000;
+}
+const getUsers=async()=>{
+  try{
+    let response=await fetch('/api/admin/users',{credentials:'include'});
+    const users=await response.json();
+    users.forEach(user=>{
+      const dob=users.date_of_birth.toString();
+      user.date_of_birth=`${dob.substring(0,4)}-${dob.substring(4,6)}-${dob.substring(6,8)}`;
+    });
+    return users;
+  }catch(_){
+    return null;
+  }
+};
+if(required()){
+  location.assign('/login');
+}else (async()=>{
+  const users=await getUsers();
+  if(!users){
+    location.assign('/login');
+    return;
+  }
+  const main=document.querySelector('main');
+  const table=main.querySelector('table');
+  const headerRow=table.querySelector('thead tr');
+  const tbody=table.querySelector('tbody');
+  const columns=[
+    {name:'Nom',attr:'last_name'},
+    {name:'Prénom',attr:'first_name'},
+    {name:'Date de naissance',attr:'date_of_birth'},
+    {name:'Email',attr:'email'}
+  ];
+  table.style.setProperty('--column-count',columns.length);
+  const rows=users;
+  const sorted=columns.map(it=>rows.toSorted((a,b)=>{
+    const c=a[it.attr];const d=b[it.attr];
+    if(c<d) return -1;if(c>d) return 1;return 0;
+  }));
+  columns.forEach(col=>{
+    const th=document.createElement('th');
+    th.textContent=col.name;
+    th.addEventListener('click',e=>{
+      e.preventDefault();
+      th.parentElement.querySelectorAll('th').forEach(it=>{
+        if(it!==th) it.classList.remove('asc','desc');
+      });
+      tbody.setAttribute('data-sort-by',col.attr);
+      if(th.classList.contains('asc')){
+        th.classList.remove('asc');
+        th.classList.add('desc');
+        tbody.setAttribute('data-sort-order','desc');
+      }else{
+        th.classList.remove('desc');
+        th.classList.add('asc');
+        tbody.setAttribute('data-sort-order','asc');
+      }
+      headerRow.appendChild(th);
+    });
+  });
+  rows.forEach((row,i)=>{
+    const tr=document.createElement('tr');
+    tr.setAttribute('data-index',i);
+    columns.forEach((col,j)=>{
+      const td=document.createElement('td');
+      td.textContent=row[col.attr];
+      tr.appendChild(td);
+      tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
+    });
+    tbody.appendChild(tr);
+  });
+  const stylesheet=new CSSStyleSheet();
+  columns.forEach(col=>{
+    `tbody[data-sort-by="${col.attr}"] tr{transform:translateY(calc(2em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))))}`
+  });
+  document.adoptedStyleSheets.push(stylesheet);
+})();
+</script>
+</body>
+</html>
