@@ -416,7 +416,7 @@ if(!required()){
     if(abortController) abortController.abort();
     abortController=new AbortController();
     const signal=abortController.signal;
-    setTimeout(()=>signal.abort(),30_000);
+    setTimeout(()=>abortController.abort(),30_000);
     passkeyInput.onclick=null;
     passkeyInput.onkeydown=null;
     passkeyInput.onchange=null;
