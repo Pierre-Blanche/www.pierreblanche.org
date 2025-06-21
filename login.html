@@ -431,7 +431,8 @@ if(!required()){
           /*credentials:'include',*/
           signal
         });
-      const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(await response.json());
+      const credentialRequestOptions=await response.json();
+      const publicKey=PublicKeyCredential.parseRequestOptionsFromJSON(credentialRequestOptions);
       const options={signal,publicKey};
       if(PublicKeyCredential.isConditionalMediationAvailable()) options.mediation='conditional';
       const credential=await navigator.credentials.get({signal,publicKey});
@@ -448,8 +449,8 @@ if(!required()){
           location.assign('/user');
           return;
         }else if(PublicKeyCredential.signalUnknownCredential){
-          console.log(credential);
-          PublicKeyCredential.signalUnknownCredential({rpId: credential.rpId,credentialId: credential.id});
+          console.log(credentialRequestOptions);
+          PublicKeyCredential.signalUnknownCredential({rpId: credentialRequestOptions.rpId,credentialId: credential.id});
         }
       }
     }catch(_){
