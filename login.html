@@ -449,8 +449,7 @@ if(!required()){
           location.assign('/user');
           return;
         }else if(PublicKeyCredential.signalUnknownCredential){
-          console.log(credentialRequestOptions);
-          PublicKeyCredential.signalUnknownCredential({rpId: credentialRequestOptions.rpId,credentialId: credential.id});
+          PublicKeyCredential.signalUnknownCredential({rpId: location.origin,credentialId: credential.id});
         }
       }
     }catch(_){
