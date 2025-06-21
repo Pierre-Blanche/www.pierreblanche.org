@@ -54,7 +54,7 @@ const required=()=>{
 }
 const getUsers=async()=>{
   try{
-    let response=await fetch('/api/admin/users',{credentials:'include'});
+    let response=await fetch('/api/user/admin/users',{credentials:'include'});
     const users=await response.json();
     users.forEach(user=>{
       const dob=users.date_of_birth.toString();
