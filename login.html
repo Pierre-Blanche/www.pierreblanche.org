@@ -379,7 +379,7 @@ if(!required()){
       body.append('dob',dob);
       const otp=otpInput?.value?.trim();
       if(otp) body.append('otp',otp);
-      const response=await fetch('/api/user',{method: 'PUT',body});
+      const response=await fetch('/api/user',{method: 'POST',body});
       if(response.ok) selectTab(registerConfirmationTab);
       else if(response.status===403){
         otpInput.classList.add('invalid');
