@@ -129,15 +129,15 @@ if(required()){
     }
     th.addEventListener('click',e=>{
       e.preventDefault();
-      tbody.setAttribute('data-sort-by',col.attr);
       svgs.forEach(svg=>svg.classList.remove('active'));
-      if(th.classList.contains('asc')){
+      if(tbody.getAttribute('data-sort-by')===col.attr&&tbody.getAttribute('data-sort-order')==='asc'){
         tbody.setAttribute('data-sort-order','desc');
         th.querySelector('svg.asc').classList.remove('active');
       }else{
         tbody.setAttribute('data-sort-order','asc');
         th.querySelector('svg.asc').classList.add('active');
       }
+      tbody.setAttribute('data-sort-by',col.attr);
     });
     headerRow.appendChild(th);
   });
