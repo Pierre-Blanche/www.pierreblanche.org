@@ -155,13 +155,18 @@ if(required()){
   });
   const stylesheet=new CSSStyleSheet();
   columns.forEach(col=>{
-    const rule=`tbody[data-sort-by="${col.attr}"] tr{
+    const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
       transform:translateY(calc(
         2em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
       ));
     }`;
-    console.log(rule);
-    stylesheet.insertRule(rule);
+    stylesheet.insertRule(ruleAsc);
+    const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
+      transform:translateY(calc(
+        2em * (${rows.length} - attr(data-${col.attr}-index type(<integer>)) + attr(data-index type(<integer>)))
+      ));
+    }`;
+    stylesheet.insertRule(ruleDesc);
   });
   document.adoptedStyleSheets.push(stylesheet);
 })();
