@@ -130,9 +130,13 @@ if(required()){
     const listener=e=>{
       if(!e.key||e.key==='Enter'){
         if(e.key) e.preventDefault();
+        emailField.removeAttribute('contenteditable');
+        emailField.removeEventListener('blur',listener);
+        emailField.removeEventListener('keydown',listener);
         const value=emailField.textContent;
         if(value!==content){
           if(/^[\x20-\x7f]*$/.test(value)&&value.length>5&&value.substring(1,value.length-4).includes('@')){
+            console.log('updating email');
             (async()=>{
               const response=await fetch('/api/user/email',{method:'POST',body:value,credentials:'include'});
               if(response.ok){
@@ -142,9 +146,6 @@ if(required()){
             })();
           }else emailField.textContent=content;
         }
-        emailField.removeAttribute('contenteditable');
-        emailField.removeEventListener('blur',listener);
-        emailField.removeEventListener('keydown',listener);
       }
     };
     emailField.addEventListener('blur',listener);
