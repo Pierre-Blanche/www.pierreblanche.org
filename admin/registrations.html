@@ -44,7 +44,7 @@ th>svg.desc{top:0}th>svg.asc{bottom:0}
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <main>
-  <h1>Liste des licenciés</h1>
+  <h1>Liste d'attente</h1>
   <table>
     <thead><tr></tr></thead>
     <tbody></tbody>
@@ -56,13 +56,20 @@ const required=()=>{
   const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
   return isNaN(t)||new Date().getTime()>(t-padding)*1000;
 }
-const getUsers=async()=>{
+const getRegistrations=async()=>{
   try{
-    let response=await fetch('/api/user/admin/users',{credentials:'include'});
+    let response=await fetch('/api/user/admin/registrations',{credentials:'include'});
     const users=await response.json();
+    const formatter=new Intl.DateTimeFormat('fr',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    users.forEach(user=>{
+      user.date_of_birth=formatter.format(new Date(user.date_of_birth*1000));
+    })
     users.forEach(user=>{
       const dob=user.date_of_birth.toString();
       user.date_of_birth=`${dob.substring(0,4)}-${dob.substring(4,6)}-${dob.substring(6,8)}`;
+      const date=new Date(user.timestamp*1000);
+      const {year,month,day,hour,minute}=Object.fromEntries(formatter.formatToParts(date).map(it=>[it.type,it.value]));
+      user.timestamp=`${year}-${month}-${day} ${hour}:${minute}`;
     });
     return users;
   }catch(_){
@@ -85,7 +92,8 @@ if(required()){
     {name:'Nom',attr:'last_name'},
     {name:'Prénom',attr:'first_name'},
     {name:'Date de naissance',attr:'date_of_birth'},
-    {name:'Email',attr:'email'}
+    {name:'Email',attr:'email'},
+    {name:'Date et heure',attr:'timestamp'}
   ];
   table.style.setProperty('--column-count',columns.length);
   const rows=users;

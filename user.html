@@ -5,6 +5,7 @@
 <title>🏠 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#282828">
+<meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple.png">
 <link rel="manifest" href="/pwa.json">
@@ -39,6 +40,9 @@ main>*:empty{display:none}
 main svg{width:1em;height:1em;opacity:.75;cursor:pointer}
 main svg:hover{opacity:1}
 main svg:hover .highlight{fill:#1e90ff}
+main#admin:empty{display:none}
+main#admin{display:block;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
+main#admin:hover{color:#fff;text-decoration-color:currentColor}
 </style>
 </head>
 <body>
@@ -60,7 +64,7 @@ main svg:hover .highlight{fill:#1e90ff}
     </svg>
   </div>
   <div id="session_info"></div>
-  <div id="admin"></div>
+  <a id="admin" href="/admin"></a>
 </main>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
