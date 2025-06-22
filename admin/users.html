@@ -30,7 +30,7 @@ main :is(thead,tbody){display:contents}
 main tr{display:grid;grid-template-columns:subgrid;grid-column:1/-1;transform:translateY(0);transition:transform 1s ease-in-out}
 td,th{display:grid;place-items:center start;padding:0 .5em;border:1px solid currentColor}
 th{background:#3a3a3a;color:#fff;cursor:pointer;position:relative}
-th>svg{position:absolute;cursor:pointer;padding:.5em;right:0;width:.75em;height:.75em}
+th>svg{position:absolute;cursor:pointer;right:0;width:.75em;height:.75em}
 th>svg:hover{color:#fff}
 th>svg.up{top:0}th>svg.down{bottom:0}
 </style>
@@ -98,14 +98,14 @@ if(required()){
     th.textContent=col.name;
     {
       const up=document.createElementNS(svgNS,'svg');
-      up.setAttribute('viewBox','0 0 256 144');
-      const path=document.createElementNS(svgNS,'path');
-      path.setAttribute('stroke-linecap','round');
-      path.setAttribute('stroke-width','32');
-      path.setAttribute('fill','none');
-      path.setAttribute('d','m224 120-96-96-96 96');
-      path.setAttribute('stroke','currentColor');
-      up.appendChild(path);
+      const use=document.createElementNS(svgNS,'use');
+      use.setAttribute('href','/admin/symbols.svg#chevron-up');
+      use.setAttribute('stroke','currentColor');
+      use.setAttribute('x', '0');
+      use.setAttribute('y', '0');
+      use.setAttribute('width', '256');
+      use.setAttribute('height', '144');
+      down.appendChild(use);
       up.classList.add('up');
       th.appendChild(up);
     }
