@@ -98,18 +98,24 @@ if(required()){
     th.textContent=col.name;
     {
       const up=document.createElementNS(svgNS,'svg');
+      up.setAttribute('viewBox','0 0 256 256');
       const use=document.createElementNS(svgNS,'use');
       use.setAttribute('href','/admin/symbols.svg#chevron-up');
       use.setAttribute('stroke','currentColor');
+      use.setAttribute('width', '256');
+      use.setAttribute('height', '256');
       up.appendChild(use);
       up.classList.add('up');
       th.appendChild(up);
     }
     {
       const down=document.createElementNS(svgNS,'svg');
+      down.setAttribute('viewBox','0 0 256 256');
       const use=document.createElementNS(svgNS,'use');
       use.setAttribute('href','/admin/symbols.svg#chevron-down');
       use.setAttribute('stroke','currentColor');
+      use.setAttribute('width', '256');
+      use.setAttribute('height', '256');
       down.appendChild(use);
       down.classList.add('down');
       th.appendChild(down);
