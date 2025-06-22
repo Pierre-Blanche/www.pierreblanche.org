@@ -121,9 +121,9 @@ if(required()){
   if(admin){
     document.getElementById('admin').textContent='Administrateur';
   }
-  const emailField=document.getElementById('#email');
-  const editEmailButton=document.getElementById('#email+svg');
-  const pendingEmailButton=document.getElementById('#email+svg+svg');
+  const emailField=document.querySelector('#email');
+  const editEmailButton=document.querySelector('#email+svg');
+  const pendingEmailButton=document.querySelector('#email+svg+svg');
   editEmailButton.addEventListener('click',async()=>{
     emailField.setAttribute('contenteditable','plaintext-only');
     const content=emailField.textContent;
