@@ -163,7 +163,7 @@ if(required()){
     stylesheet.insertRule(ruleAsc);
     const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
       transform:translateY(calc(
-        2em * (${rows.length} - attr(data-${col.attr}-index type(<integer>)) + attr(data-index type(<integer>)))
+        2em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleDesc);
