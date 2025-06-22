@@ -123,9 +123,15 @@ if(required()){
   });
   const stylesheet=new CSSStyleSheet();
   columns.forEach(col=>{
-    `tbody[data-sort-by="${col.attr}"] tr{transform:translateY(calc(2em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))))}`
+    const rule=`tbody[data-sort-by="${col.attr}"] tr{
+      transform:translateY(calc(
+        2em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+      ));
+    }`;
+    console.log(rule);
+    stylesheet.insertRule(rule);
   });
-  document.adoptedStyleSheets.push(stylesheet);
+  document.adoptedStyleSheets=[...document.adoptedStyleSheets,stylesheet];
 })();
 </script>
 </body>
