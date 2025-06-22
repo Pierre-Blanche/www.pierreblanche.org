@@ -29,7 +29,10 @@ main>table{--column-count:0;display:grid;grid-template-columns:repeat(var(--colu
 main :is(thead,tbody){display:contents}
 main tr{display:grid;grid-template-columns:subgrid;grid-column:1/-1;transform:translateY(0);transition:transform 1s ease-in-out}
 td,th{display:grid;place-items:center start;padding:0 .5em;border:1px solid currentColor}
-th{background:#3a3a3a;color:#fff;cursor:pointer}
+th{background:#3a3a3a;color:#fff;cursor:pointer;position:relative}
+th>svg{position:absolute;cursor:pointer;padding:.5em;right:0;width:.75em;height:.75em}
+th>svg:hover{color:#fff}
+th>svg.up{top:0}th>svg.down{bottom:0}
 </style>
 </head>
 <body>
@@ -89,9 +92,28 @@ if(required()){
     const c=a[it.attr];const d=b[it.attr];
     if(c<d) return -1;if(c>d) return 1;return 0;
   }));
+  const svgNS='http://www.w3.org/2000/svg';
   columns.forEach(col=>{
     const th=document.createElement('th');
     th.textContent=col.name;
+    {
+      const up=document.createElementNS(svgNS,'svg');
+      const use=document.createElementNS(svgNS,'use');
+      use.setAttribute('href','/admin/symbols.svg#chevron-up');
+      use.setAttribute('stroke','currentColor');
+      up.appendChild(use);
+      up.classList.add('up');
+      th.appendChild(up);
+    }
+    {
+      const down=document.createElementNS(svgNS,'svg');
+      const use=document.createElementNS(svgNS,'use');
+      use.setAttribute('href','/admin/symbols.svg#chevron-down');
+      use.setAttribute('stroke','currentColor');
+      down.appendChild(use);
+      down.classList.add('down');
+      th.appendChild(down);
+    }
     th.addEventListener('click',e=>{
       e.preventDefault();
       th.parentElement.querySelectorAll('th').forEach(it=>{
@@ -131,7 +153,7 @@ if(required()){
     console.log(rule);
     stylesheet.insertRule(rule);
   });
-  document.adoptedStyleSheets=[...document.adoptedStyleSheets,stylesheet];
+  document.adoptedStyleSheets.push(stylesheet);
 })();
 </script>
 </body>

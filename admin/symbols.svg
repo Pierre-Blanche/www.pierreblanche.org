@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <symbol id="chevron-up" viewBox="0 0 256 256"><path d="m32 80 96 96 96-96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
+    <symbol id="chevron-down" viewBox="0 0 256 256"><path d="m224 176-96-96-96 96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
+  </defs>
+</svg>
