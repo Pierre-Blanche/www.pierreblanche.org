@@ -99,10 +99,13 @@ if(required()){
     {
       const up=document.createElementNS(svgNS,'svg');
       up.setAttribute('viewBox','0 0 256 144');
-      const use=document.createElementNS(svgNS,'use');
-      use.setAttribute('href','/admin/symbols.svg#chevron-up');
-      use.setAttribute('stroke','currentColor');
-      up.appendChild(use);
+      const path=document.createElementNS(svgNS,'path');
+      path.setAttribute('stroke-linecap','round');
+      path.setAttribute('stroke-width','32');
+      path.setAttribute('fill','none');
+      path.setAttribute('d','m224 120-96-96-96 96');
+      path.setAttribute('stroke','currentColor');
+      up.appendChild(path);
       up.classList.add('up');
       th.appendChild(up);
     }
