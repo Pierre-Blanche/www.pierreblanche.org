@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="288" viewBox="0 0 256 320">
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="288" viewBox="0 0 256 144">
   <defs>
-    <symbol id="chevron-down" viewBox="0 56 256 144"><path d="m32 80 96 96 96-96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
-    <symbol id="chevron-up" viewBox="0 56 256 144"><path d="m224 176-96-96-96 96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
+    <symbol id="chevron-down" viewBox="0 0 256 144"><path d="m32 24 96 96 96-96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
+    <symbol id="chevron-up" viewBox="0 0 256 144"><path d="m224 120-96-96-96 96" stroke-linecap="round" fill="none" stroke-width="32"/></symbol>
   </defs>
-  <rect width="256" height="320" fill="#888"/>
-  <use href="#chevron-down" stroke="currentColor" width="256" height="144" y="164"/>
-  <use href="#chevron-up" stroke="currentColor" width="256" height="144" y="16"/>
+  <rect width="256" height="144" fill="#888"/>
+  <use href="#chevron-down" stroke="currentColor"/>
+  <use href="#chevron-up" stroke="currentColor"/>
 </svg>

@@ -102,8 +102,6 @@ if(required()){
       const use=document.createElementNS(svgNS,'use');
       use.setAttribute('href','/admin/symbols.svg#chevron-up');
       use.setAttribute('stroke','currentColor');
-      use.setAttribute('width', '256');
-      use.setAttribute('height', '144');
       up.appendChild(use);
       up.classList.add('up');
       th.appendChild(up);
@@ -114,6 +112,8 @@ if(required()){
       const use=document.createElementNS(svgNS,'use');
       use.setAttribute('href','/admin/symbols.svg#chevron-down');
       use.setAttribute('stroke','currentColor');
+      use.setAttribute('x', '0');
+      use.setAttribute('y', '0');
       use.setAttribute('width', '256');
       use.setAttribute('height', '144');
       down.appendChild(use);
