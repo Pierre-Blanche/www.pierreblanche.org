@@ -79,7 +79,7 @@ const getRegistrations=async()=>{
 if(required()){
   location.assign('/login');
 }else (async()=>{
-  const users=await getUsers();
+  const users=await getRegistrations();
   if(!users){
     location.assign('/login');
     return;
