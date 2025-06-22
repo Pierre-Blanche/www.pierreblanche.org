@@ -59,8 +59,14 @@ main#admin:hover{color:#fff;text-decoration-color:currentColor}
   <div>
     <span id="email"></span>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+      <title>Modifier</title>
       <path fill="currentColor" stroke="currentColor" d="m11.6 7.66 2.09-2.1c.42-.4.41-1.06 0-1.47L12.04 2.3a1.05 1.05 0 0 0-1.5 0L8.4 4.44z"/>
       <path fill="none" class="highlight" stroke="currentColor" d="M11.6 7.66 5.74 13.5H2.5v-3.18l5.89-5.88"/>
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none">
+      <title>En attente de validation</title>
+      <path fill="#1e90ff" d="m8 7.5l4 4l4-4V4H8z"/>
+      <path fill="currentColor" d="M18 2H6v6l4 4l-3.99 4.01L6 22h12l-.01-5.99L14 12l4-3.99zm-2 14.5V20H8v-3.5l4-4zm0-9l-4 4l-4-4V4h8z"/>
     </svg>
   </div>
   <div id="session_info"></div>
@@ -115,6 +121,36 @@ if(required()){
   if(admin){
     document.getElementById('admin').textContent='Administrateur';
   }
+  const emailField=document.getElementById('#email');
+  const editEmailButton=document.getElementById('#email+svg');
+  const pendingEmailButton=document.getElementById('#email+svg+svg');
+  editEmailButton.addEventListener('click',async()=>{
+    emailField.setAttribute('contenteditable','plaintext-only');
+    const content=emailField.textContent;
+    const listener=e=>{
+      if(!e.key||e.key==='Enter'){
+        if(e.key) e.preventDefault();
+        const value=emailField.textContent;
+        if(value!==content){
+          if(/^[\x20-\x7f]*$/.test(value)&&value.length>5&&value.substring(1,value.length-4).includes('@')){
+            (async()=>{
+              const response=await fetch('/api/user/email',{method:'POST',body:value,credentials:'include'});
+              if(response.ok){
+                emailField.style.display='none';
+                pendingEmailButton.style.display='revert';
+              }else emailField.textContent=content;
+            })();
+          }else emailField.textContent=content;
+        }
+        emailField.removeAttribute('contenteditable');
+        emailField.removeEventListener('blur',listener);
+        emailField.removeEventListener('keydown',listener);
+      }
+    };
+    emailField.addEventListener('blur',listener);
+    emailField.addEventListener('keydown',listener);
+    emailField.focus();
+  });
   if(session_from_passkey) return;
   const signal=AbortSignal.timeout(30_000);
   const metadata=JSON.stringify({uuid:crypto.randomUUID()});
