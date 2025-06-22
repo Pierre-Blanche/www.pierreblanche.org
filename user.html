@@ -136,7 +136,7 @@ if(required()){
             (async()=>{
               const response=await fetch('/api/user/email',{method:'POST',body:value,credentials:'include'});
               if(response.ok){
-                emailField.style.display='none';
+                editEmailButton.style.display='none';
                 pendingEmailButton.style.display='revert';
               }else emailField.textContent=content;
             })();
