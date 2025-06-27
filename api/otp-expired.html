@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>🫅️ Pierre Blanche</title>
+<title>🚨 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#282828">
 <meta name="robots" content="noindex">
@@ -18,32 +18,34 @@ html{
   font:clamp(7pt,6pt + .75vw + .65vh,32pt)/1.5 __barlow__;
   font-variation-settings:"wght" 50;
 }
-body{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr;padding:1em 2em 2em 2em}
+body{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:1em 2em 2em 2em}
 body>*{grid-column:1;grid-row:2;place-self:center}
 header{place-self:stretch;grid-row:1;display:grid;grid-template-columns:auto 1fr auto;font-variation-settings:"wght" 40;font-size:max(1em,16pt)}
 header>a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
 header>a[href]:hover{color:#fff;text-decoration-color:currentColor}
+footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-variation-settings:"wght" 30}
+footer>img{height:2em}
+footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-main{place-self:stretch;display:grid;place-items:center;grid-template-rows:auto 1fr}
-main>div{display:grid;place-items:center;gap:1.5em;font-size:1.25em}
-main a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
-main a[href]:hover{color:#fff;text-decoration-color:currentColor}
-h1{font-size:1.5em;line-height:1.25;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
+main{font-size:1.5em;max-width:50ch;padding:.5em}
+main>p:first-child{text-wrap:pretty}
+main>p:last-child{color:#ff6961;font-style:italic;font-variation-settings:"wght" 85;padding-top:.5em}
 </style>
 </head>
 <body>
 <header>
-  <a href="/user">Accueil</a>
+  <a href="/">Accueil</a>
   <div></div>
-  <a href="/api/auth/disconnect_user">Déconnexion</a>
+  <a href="/user">Connexion pour les adhérents</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <main>
-  <h1>Gestion du club</h1>
-  <div>
-    <a href="/admin/users">Liste des licenciés</a>
-    <a href="/admin/registrations">Liste d'attente</a>
-  </div>
+  <p>Le liens de connexion envoyés par email ne sont valides que 15&nbsp;minutes.
+  <p>Celui-ci a expiré.
 </main>
+<footer>
+  <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
+  <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
+</footer>
 </body>
 </html>
