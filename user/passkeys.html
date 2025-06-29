@@ -2,13 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>🚧 Pierre Blanche</title>
+<title>🔑 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#282828">
+<meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple.png">
 <link rel="manifest" href="/pwa.json">
-<link rel="canonical" href="https://pierre-blanche-escalade.fr/informations">
+<link rel="canonical" href="https://pierre-blanche-escalade.fr/user/passkeys">
 <link rel="stylesheet" href="/fonts/barlow.css">
 <style>
 :where(*){margin:0;padding:0;box-sizing:border-box}
@@ -31,17 +32,42 @@ h1{font-size:2em;line-height:1.25;display:flex;flex-direction:column;font-variat
 </head>
 <body>
 <header>
-  <a href="/">Accueil</a>
+  <a href="/user">Page adhérent</a>
   <div></div>
-  <a href="/user">Connexion pour les adhérents</a>
+  <a href="/api/auth/disconnect_user">Déconnexion</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <h1>
-  En construction
+  Clés d'accès
 </h1>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
 </footer>
+<script type="module">
+const required=()=>{
+  const padding=30;
+  const t=parseInt(document.cookie?.split(';')?.find(it=>it.trim().startsWith('st='))?.trim()?.substring(3));
+  return isNaN(t)||new Date().getTime()>(t-padding)*1000;
+}
+const getPasskeys=async()=>{
+  try{
+    let response=await fetch('/api/user/passkeys',{credentials:'include'});
+    return await response.json();
+  }catch(_){
+    return null;
+  }
+};
+if(required()){
+  location.assign('/login');
+}else (async()=>{
+  const passkeys=await getPasskeys();
+  if(!passkeys){
+    location.assign('/login');
+    return;
+  }
+  console.log(passkeys);
+})();
+</script>
 </body>
 </html>

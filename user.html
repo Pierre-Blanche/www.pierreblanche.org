@@ -9,7 +9,7 @@
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple.png">
 <link rel="manifest" href="/pwa.json">
-<link rel="canonical" href="https://pierre-blanche-escalade.fr">
+<link rel="canonical" href="https://pierre-blanche-escalade.fr/user">
 <link rel="stylesheet" href="/fonts/barlow.css">
 <link rel="stylesheet" href="/fonts/cascadia.css">
 <style>
@@ -22,8 +22,8 @@ html{
 body{position:relative;min-height:100%;display:grid;grid-template-rows:auto 1fr auto;padding:1em 2em 2em 2em}
 body>*{grid-column:1;grid-row:2;place-self:center}
 header{place-self:stretch;grid-row:1;display:grid;grid-template-columns:auto 1fr auto;font-variation-settings:"wght" 40;font-size:max(1em,16pt)}
-header>a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
-header>a[href]:hover{color:#fff;text-decoration-color:currentColor}
+:is(header,#session_info)>a[href]{display:block;color:inherit;text-decoration-thickness:5%;text-underline-offset:.1em;text-decoration-color:rgb(from currentColor r g b /50%)}
+:is(header,#session_info)>a[href]:hover{color:#fff;text-decoration-color:currentColor}
 footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-variation-settings:"wght" 30}
 footer>img{height:2em}
 footer>div{text-align:center}
@@ -114,7 +114,7 @@ if(required()){
     {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}
   ).formatToParts(expirationDate).map(it=>[it.type,it.value]));
   if(session_from_passkey){
-    sessionInfoElement.textContent=`Connexion par clé d'accès valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
+    sessionInfoElement.innerHTML=`Connexion par <a href="/user/passkeys">clé d'accès</a> valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
   }else{
     sessionInfoElement.textContent=`Connexion par lien unique valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
   }
