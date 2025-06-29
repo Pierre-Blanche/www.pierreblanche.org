@@ -186,9 +186,10 @@ const required=()=>{
 if(!required()){
   location.assign('/user');
 }else{
+  let abortController=null;
   const defaultDate=new Date(2000,0,31,12,0,0,0);
   const tabs=[...document.querySelectorAll('main>div')];
-  const [_loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
+  const [loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
   const tabLevels=[0,1,2,1,2,2];
   history.replaceState(0,'',null);
   window.addEventListener('popstate',e=>{
@@ -205,6 +206,7 @@ if(!required()){
           default: history.replaceState(i,null); break;
         }
       }
+      if(abortController&&tab!==loginTab) abortController.abort();
     }else it.setAttribute('inert','');
     it.querySelectorAll('input:is([type="text"],[type="email"],[type="number"])').forEach(it=>it.value='');
     it.querySelectorAll('input[type="date"]').forEach(it=>it.valueAsDate=defaultDate);
@@ -425,7 +427,6 @@ if(!required()){
     });
   }
   const passkeyInput=document.querySelector('input#passkey');
-  let abortController=null;
   const prompt=async(e)=>{
     if(e) e.preventDefault();
     if(abortController) abortController.abort();
