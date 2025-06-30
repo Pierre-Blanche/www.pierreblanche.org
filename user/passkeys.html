@@ -27,7 +27,17 @@ footer{grid-row:3;display:flex;place-items:center;gap:3em;font-size:.75em;font-v
 footer>img{height:2em}
 footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
-h1{font-size:2em;line-height:1.25;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
+h1{font-size:2em;line-height:1.25;padding:1em 0 .5em 0;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
+table{margin-top:1.5em;font-size:min(1.75vw,.75em)}
+table,th{border:2px solid currentColor;border-collapse:collapse}
+td{padding:0 .5em}
+td:before{content:'';z-index:-1;position:absolute;inset:0;border:1px solid currentColor;background:#222}
+tr{height:round(up,2.5em,1px);transform:translateY(0);transition:transform 600ms ease-in-out}
+td,th{position:relative;vertical-align:center}
+th{padding:0 3em 0 1em;text-align:center;background:#3a3a3a;color:#fff;cursor:pointer}
+th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
+th:hover>svg{opacity:5}th>svg.active{opacity:1}
+th>svg.desc{top:0}th>svg.asc{bottom:0}
 </style>
 </head>
 <body>
@@ -37,9 +47,13 @@ h1{font-size:2em;line-height:1.25;display:flex;flex-direction:column;font-variat
   <a href="/api/auth/disconnect_user">Déconnexion</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
-<h1>
-  Clés d'accès
-</h1>
+<main>
+  <h1>Clés d'accès</h1>
+  <table>
+    <thead><tr></tr></thead>
+    <tbody data-sort-by="timestamp" data-sort-order="asc"></tbody>
+  </table>
+</main>
 <footer>
   <div>L'association Pierre Blanche bénéficie du soutien de&nbsp;la&nbsp;Ville&nbsp;de&nbsp;Fontenay-le-Comte</div>
   <img src="/flc.svg" alt="Logo de la ville de Fontenay-le-Comte">
@@ -53,7 +67,15 @@ const required=()=>{
 const getPasskeys=async()=>{
   try{
     let response=await fetch('/api/user/passkeys',{credentials:'include'});
-    return await response.json();
+    let passkeys=await response.json();
+    passkeys.sort((a,b)=>a.timestamp-b.timestamp);
+    const formatter=new Intl.DateTimeFormat('fr',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    passkeys.forEach(passkey=>{
+      const date=new Date(passkey.timestamp*1000);
+      const {year,month,day,hour,minute}=Object.fromEntries(formatter.formatToParts(date).map(it=>[it.type,it.value]));
+      passkey.timestamp=`${year}-${month}-${day} ${hour}:${minute}`;
+    });
+    return passkeys;
   }catch(_){
     return null;
   }
@@ -66,7 +88,96 @@ if(required()){
     location.assign('/login');
     return;
   }
-  console.log(passkeys);
+  const main=document.querySelector('main');
+  const table=main.querySelector('table');
+  const headerRow=table.querySelector('thead tr');
+  const tbody=table.querySelector('tbody');
+  const columns=[
+    {name:'Date',attr:'timestamp'},
+    {name:'Navigateur',attr:'brand'},
+    {name:'Plateforme',attr:'platform'}
+  ];
+  const rows=passkeys;
+  const sorted=columns.map(it=>rows.toSorted((a,b)=>{
+    const c=a[it.attr];const d=b[it.attr];
+    if(c<d) return -1;if(c>d) return 1;return 0;
+  }));
+  const svgNS='http://www.w3.org/2000/svg';
+  const svgs=[];
+  columns.forEach(col=>{
+    const th=document.createElement('th');
+    th.textContent=col.name;
+    {
+      const up=document.createElementNS(svgNS,'svg');
+      up.setAttribute('viewBox','0 0 256 144');
+      const use=document.createElementNS(svgNS,'use');
+      use.setAttribute('href','/admin/symbols.svg#chevron-up');
+      use.setAttribute('stroke','currentColor');
+      use.setAttribute('x', '0');
+      use.setAttribute('y', '0');
+      use.setAttribute('width', '256');
+      use.setAttribute('height', '144');
+      up.appendChild(use);
+      up.classList.add('desc',col.attr);
+      th.appendChild(up);
+      svgs.push(up);
+    }
+    {
+      const down=document.createElementNS(svgNS,'svg');
+      down.setAttribute('viewBox','0 0 256 144');
+      const use=document.createElementNS(svgNS,'use');
+      use.setAttribute('href','/admin/symbols.svg#chevron-down');
+      use.setAttribute('stroke','currentColor');
+      use.setAttribute('x', '0');
+      use.setAttribute('y', '0');
+      use.setAttribute('width', '256');
+      use.setAttribute('height', '144');
+      down.appendChild(use);
+      down.classList.add('asc',col.attr);
+      th.appendChild(down);
+      svgs.push(down);
+    }
+    th.addEventListener('click',e=>{
+      e.preventDefault();
+      svgs.forEach(svg=>svg.classList.remove('active'));
+      if(tbody.getAttribute('data-sort-by')===col.attr&&tbody.getAttribute('data-sort-order')==='asc'){
+        tbody.setAttribute('data-sort-order','desc');
+        th.querySelector('svg.desc').classList.add('active');
+      }else{
+        tbody.setAttribute('data-sort-order','asc');
+        th.querySelector('svg.asc').classList.add('active');
+      }
+      tbody.setAttribute('data-sort-by',col.attr);
+    });
+    headerRow.appendChild(th);
+  });
+  rows.forEach((row,i)=>{
+    const tr=document.createElement('tr');
+    tr.setAttribute('data-index',i);
+    columns.forEach((col,j)=>{
+      const td=document.createElement('td');
+      td.textContent=row[col.attr];
+      tr.appendChild(td);
+      tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
+    });
+    tbody.appendChild(tr);
+  });
+  const stylesheet=new CSSStyleSheet();
+  columns.forEach(col=>{
+    const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
+      transform:translateY(calc(
+        round(up,2.5em,1px) * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+      ));
+    }`;
+    stylesheet.insertRule(ruleAsc);
+    const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
+      transform:translateY(calc(
+        round(up,2.5em,1px) * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
+      ));
+    }`;
+    stylesheet.insertRule(ruleDesc);
+  });
+  document.adoptedStyleSheets.push(stylesheet);
 })();
 </script>
 </body>
