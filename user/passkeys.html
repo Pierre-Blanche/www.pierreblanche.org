@@ -92,6 +92,7 @@ if(required()){
   const main=document.querySelector('main');
   const table=main.querySelector('table');
   const headerRow=table.querySelector('thead tr');
+  table.style.setProperty('--row-height',`${parseFloat(getComputedStyle(headerRow).height)}px`);
   const tbody=table.querySelector('tbody');
   const columns=[
     {name:'Date',attr:'timestamp'},
@@ -170,13 +171,13 @@ if(required()){
   columns.forEach(col=>{
     const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
       transform:translateY(calc(
-        2.5em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+        var(--row-height,2.5em) * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleAsc);
     const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
       transform:translateY(calc(
-        2.5em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
+        var(--row-height,2.5em) * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleDesc);
