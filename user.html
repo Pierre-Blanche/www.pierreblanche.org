@@ -144,6 +144,7 @@ if(required()){
               if(response.ok){
                 editEmailButton.style.display='none';
                 pendingEmailButton.style.display='revert';
+                if(document.activeElement===emailField) emailField.blur();
               }else emailField.textContent=content;
             })();
           }else emailField.textContent=content;
