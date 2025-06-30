@@ -26,11 +26,11 @@ header>a[href]:hover{color:#fff;text-decoration-color:currentColor}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
 main{place-self:stretch;display:grid;place-items:center;grid-template-rows:auto 1fr}
 h1{font-size:1.25em;line-height:1.25;padding:.5em 0 .25em 0;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
-table{margin-top:1.5em}
+table{margin-top:1.5em;font-size:min(1.75vw,.75em)}
 table,th{border:2px solid currentColor;border-collapse:collapse}
 td{padding:0 .5em}
 td:before{content:'';z-index:-1;position:absolute;inset:0;border:1px solid currentColor;background:#222}
-tr{height:2.5em;transform:translateY(0);transition:transform 600ms ease-in-out}
+tr{height:round(up,2.5em,1px);transform:translateY(0);transition:transform 600ms ease-in-out}
 td,th{position:relative;vertical-align:center}
 th{padding:0 3em 0 1em;text-align:center;background:#3a3a3a;color:#fff;cursor:pointer}
 th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
@@ -89,7 +89,6 @@ if(required()){
     {name:'Date de naissance',attr:'date_of_birth'},
     {name:'Email',attr:'email'}
   ];
-  table.style.setProperty('--column-count',columns.length);
   const rows=users;
   const sorted=columns.map(it=>rows.toSorted((a,b)=>{
     const c=a[it.attr];const d=b[it.attr];
@@ -159,13 +158,13 @@ if(required()){
   columns.forEach(col=>{
     const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
       transform:translateY(calc(
-        2.5em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+        round(up,2.5em,1px) * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleAsc);
     const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
       transform:translateY(calc(
-        2.5em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
+        round(up,2.5em,1px) * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleDesc);
