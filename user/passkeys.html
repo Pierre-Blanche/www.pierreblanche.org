@@ -33,6 +33,7 @@ table,th{border:2px solid currentColor;border-collapse:collapse}
 td{padding:0 .5em}
 td:before{content:'';z-index:-1;position:absolute;inset:0;border:1px solid currentColor;background:#222}
 tr{height:2.5em;max-height:2.5em;transform:translateY(0);transition:transform 600ms ease-in-out}
+tbody>tr{backface-visibility: hidden}
 td,th{position:relative;vertical-align:center}
 th{padding:0 1em 0 1em;text-align:center;background:#3a3a3a;color:#fff}
 th:first-child{padding-right:3em;cursor:pointer}
@@ -92,7 +93,6 @@ if(required()){
   const main=document.querySelector('main');
   const table=main.querySelector('table');
   const headerRow=table.querySelector('thead tr');
-  table.style.setProperty('--row-height',`${parseFloat(getComputedStyle(headerRow).height)}px`);
   const tbody=table.querySelector('tbody');
   const columns=[
     {name:'Date',attr:'timestamp'},
@@ -171,13 +171,13 @@ if(required()){
   columns.forEach(col=>{
     const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
       transform:translateY(calc(
-        var(--row-height,2.5em) * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+        2.5em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleAsc);
     const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
       transform:translateY(calc(
-        var(--row-height,2.5em) * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
+        2.5em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
       ));
     }`;
     stylesheet.insertRule(ruleDesc);
