@@ -34,7 +34,8 @@ td{padding:0 .5em}
 td:before{content:'';z-index:-1;position:absolute;inset:0;border:1px solid currentColor;background:#222}
 tr{height:round(up,2.5em,1px);transform:translateY(0);transition:transform 600ms ease-in-out}
 td,th{position:relative;vertical-align:center}
-th{padding:0 3em 0 1em;text-align:center;background:#3a3a3a;color:#fff;cursor:pointer}
+th{padding:0 1em 0 1em;text-align:center;background:#3a3a3a;color:#fff}
+th:first-child{padding-right:3em;cursor:pointer}
 th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
 th:hover>svg{opacity:5}th>svg.active{opacity:1}
 th>svg.desc{top:0}th>svg.asc{bottom:0}
@@ -104,51 +105,54 @@ if(required()){
   }));
   const svgNS='http://www.w3.org/2000/svg';
   const svgs=[];
-  columns.forEach(col=>{
+  columns.forEach((col,i)=>{
     const th=document.createElement('th');
     th.textContent=col.name;
-    {
-      const up=document.createElementNS(svgNS,'svg');
-      up.setAttribute('viewBox','0 0 256 144');
-      const use=document.createElementNS(svgNS,'use');
-      use.setAttribute('href','/admin/symbols.svg#chevron-up');
-      use.setAttribute('stroke','currentColor');
-      use.setAttribute('x', '0');
-      use.setAttribute('y', '0');
-      use.setAttribute('width', '256');
-      use.setAttribute('height', '144');
-      up.appendChild(use);
-      up.classList.add('desc',col.attr);
-      th.appendChild(up);
-      svgs.push(up);
-    }
-    {
-      const down=document.createElementNS(svgNS,'svg');
-      down.setAttribute('viewBox','0 0 256 144');
-      const use=document.createElementNS(svgNS,'use');
-      use.setAttribute('href','/admin/symbols.svg#chevron-down');
-      use.setAttribute('stroke','currentColor');
-      use.setAttribute('x', '0');
-      use.setAttribute('y', '0');
-      use.setAttribute('width', '256');
-      use.setAttribute('height', '144');
-      down.appendChild(use);
-      down.classList.add('asc',col.attr);
-      th.appendChild(down);
-      svgs.push(down);
-    }
-    th.addEventListener('click',e=>{
-      e.preventDefault();
-      svgs.forEach(svg=>svg.classList.remove('active'));
-      if(tbody.getAttribute('data-sort-by')===col.attr&&tbody.getAttribute('data-sort-order')==='asc'){
-        tbody.setAttribute('data-sort-order','desc');
-        th.querySelector('svg.desc').classList.add('active');
-      }else{
-        tbody.setAttribute('data-sort-order','asc');
-        th.querySelector('svg.asc').classList.add('active');
+    if(i===0){
+      {
+        const up=document.createElementNS(svgNS,'svg');
+        up.setAttribute('viewBox','0 0 256 144');
+        const use=document.createElementNS(svgNS,'use');
+        use.setAttribute('href','/admin/symbols.svg#chevron-up');
+        use.setAttribute('stroke','currentColor');
+        use.setAttribute('x','0');
+        use.setAttribute('y','0');
+        use.setAttribute('width','256');
+        use.setAttribute('height','144');
+        up.appendChild(use);
+        up.classList.add('desc',col.attr);
+        th.appendChild(up);
+        svgs.push(up);
       }
-      tbody.setAttribute('data-sort-by',col.attr);
-    });
+      {
+        const down=document.createElementNS(svgNS,'svg');
+        down.setAttribute('viewBox','0 0 256 144');
+        const use=document.createElementNS(svgNS,'use');
+        use.setAttribute('href','/admin/symbols.svg#chevron-down');
+        use.setAttribute('stroke','currentColor');
+        use.setAttribute('x','0');
+        use.setAttribute('y','0');
+        use.setAttribute('width','256');
+        use.setAttribute('height','144');
+        down.appendChild(use);
+        down.classList.add('asc',col.attr);
+        down.classList.add('active');
+        th.appendChild(down);
+        svgs.push(down);
+      }
+      th.addEventListener('click',e=>{
+        e.preventDefault();
+        svgs.forEach(svg=>svg.classList.remove('active'));
+        if(tbody.getAttribute('data-sort-by')===col.attr&&tbody.getAttribute('data-sort-order')==='asc'){
+          tbody.setAttribute('data-sort-order','desc');
+          th.querySelector('svg.desc').classList.add('active');
+        }else{
+          tbody.setAttribute('data-sort-order','asc');
+          th.querySelector('svg.asc').classList.add('active');
+        }
+        tbody.setAttribute('data-sort-by',col.attr);
+      });
+    }
     headerRow.appendChild(th);
   });
   rows.forEach((row,i)=>{
