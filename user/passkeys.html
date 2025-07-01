@@ -29,11 +29,14 @@ footer>div{text-align:center}
 body>img{opacity:.05;aspect-ratio:1;width:80vmin;pointer-events:none}
 h1{font-size:2em;line-height:1.25;padding:1em 0 .5em 0;display:flex;flex-direction:column;font-variation-settings:"wght" 80, "wdth" 500;place-items:center;max-width:50ch;text-align:center}
 table{margin-top:1.5em;font-size:min(1.75vw,.75em);border-spacing:0}
-table,th{border:2px solid currentColor}
-td{padding:0 .5em;border:1px solid currentColor;background:#222}
-tr{height:2.5em;max-height:2.5em;transform:translateY(0);transition:transform 600ms ease-in-out}
-td,th{position:relative;vertical-align:center}
-th{padding:0 1em 0 1em;text-align:center;background:#3a3a3a;color:#fff}
+td{padding:0 1em}
+tr{position:relative;height:3em;max-height:3em;padding:.5em;translate:0 0;transition:translate 600ms ease-in-out}
+tbody>tr:after{content:'';position:absolute;background:#333;inset:.175em;border-radius:.5em;z-index:-1}
+tbody>tr>td>span{display:block;line-height:1}
+tbody>tr:hover>td>span{scale:1.1}
+tbody>tr:hover:after{background:#444;inset:.1em -.5em}
+td,th{position:relative;vertical-align:middle;text-align:start}
+th{padding:0 1.25em 0 1.25em;font-size:.8em;font-variation-settings:"wght" 22}
 th:first-child{padding-right:3em;cursor:pointer}
 th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
 th:hover>svg{opacity:5}th>svg.active{opacity:1}
@@ -95,7 +98,7 @@ if(required()){
   const columns=[
     {name:'Date',attr:'timestamp'},
     {name:'Navigateur',attr:'brand'},
-    {name:'Plateforme',attr:'platform'}
+    {name:'Plateforme',attr:'platform'},
   ];
   const rows=passkeys;
   const sorted=columns.map(it=>rows.toSorted((a,b)=>{
@@ -159,7 +162,9 @@ if(required()){
     tr.setAttribute('data-index',i);
     columns.forEach((col,j)=>{
       const td=document.createElement('td');
-      td.textContent=row[col.attr];
+      const span=document.createElement('span');
+      span.textContent=row[col.attr];
+      td.appendChild(span);
       tr.appendChild(td);
       tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
     });
@@ -168,15 +173,15 @@ if(required()){
   const stylesheet=new CSSStyleSheet();
   columns.forEach(col=>{
     const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
-      transform:translateY(calc(
-        2.5em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
-      ));
+      translate:0 calc(
+        3em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
+      );
     }`;
     stylesheet.insertRule(ruleAsc);
     const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
-      transform:translateY(calc(
-        2.5em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
-      ));
+      translate:0 calc(
+        3em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
+      );
     }`;
     stylesheet.insertRule(ruleDesc);
   });
