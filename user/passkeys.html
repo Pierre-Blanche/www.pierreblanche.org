@@ -104,89 +104,110 @@ if(required()){
     {name:'Plateforme',attr:'platform'},
     {}
   ];
-  const rows=passkeys;
-  const svgNS='http://www.w3.org/2000/svg';
-  columns.forEach((col,i)=>{
-    const th=document.createElement('th');
-    th.textContent=col.name||'';
-    if(i===0){
-      const up=document.createElementNS(svgNS,'svg');
-      {
-        up.setAttribute('viewBox','0 0 256 144');
-        const use=document.createElementNS(svgNS,'use');
-        use.setAttribute('href','/admin/symbols.svg#chevron-up');
-        use.setAttribute('stroke','currentColor');
-        use.setAttribute('x','0');
-        use.setAttribute('y','0');
-        use.setAttribute('width','256');
-        use.setAttribute('height','144');
-        up.appendChild(use);
-        up.classList.add('desc',col.attr);
-        th.appendChild(up);
-      }
-      const down=document.createElementNS(svgNS,'svg');
-      {
-        down.setAttribute('viewBox','0 0 256 144');
-        const use=document.createElementNS(svgNS,'use');
-        use.setAttribute('href','/admin/symbols.svg#chevron-down');
-        use.setAttribute('stroke','currentColor');
-        use.setAttribute('x','0');
-        use.setAttribute('y','0');
-        use.setAttribute('width','256');
-        use.setAttribute('height','144');
-        down.appendChild(use);
-        down.classList.add('asc',col.attr);
-        down.classList.add('active');
-        th.appendChild(down);
-      }
-      th.addEventListener('click',e=>{
-        e.preventDefault();
-        [up,down].forEach(svg=>svg.classList.remove('active'));
-        if(tbody.getAttribute('data-sort-order')==='asc'){
-          tbody.setAttribute('data-sort-order','desc');
-          th.querySelector('svg.desc').classList.add('active');
-        }else{
-          tbody.setAttribute('data-sort-order','asc');
-          th.querySelector('svg.asc').classList.add('active');
+  const updateTable=(rows)=>{
+    tbody.querySelectorAll('tr').forEach(it=>it.remove());
+    headerRow.querySelectorAll('th').forEach(it=>it.remove());
+    const svgNS='http://www.w3.org/2000/svg';
+    columns.forEach((col,i)=>{
+      const th=document.createElement('th');
+      th.textContent=col.name||'';
+      if(i===0){
+        const up=document.createElementNS(svgNS,'svg');
+        {
+          up.setAttribute('viewBox','0 0 256 144');
+          const use=document.createElementNS(svgNS,'use');
+          use.setAttribute('href','/admin/symbols.svg#chevron-up');
+          use.setAttribute('stroke','currentColor');
+          use.setAttribute('x','0');
+          use.setAttribute('y','0');
+          use.setAttribute('width','256');
+          use.setAttribute('height','144');
+          up.appendChild(use);
+          up.classList.add('desc',col.attr);
+          th.appendChild(up);
         }
-      });
-    }
-    headerRow.appendChild(th);
-  });
-  rows.forEach((row,i)=>{
-    const tr=document.createElement('tr');
-    tr.setAttribute('data-index',i);
-    columns.forEach((col,j)=>{
-      const td=document.createElement('td');
-      if(col.attr){
-        const span=document.createElement('span');
-        span.textContent=row[col.attr];
-        td.appendChild(span);
-      }else{
-        const svg=document.createElementNS(svgNS,'svg');
-        svg.setAttribute('viewBox','0 0 16 16');
-        const p1=document.createElementNS(svgNS,'path');
-        p1.setAttribute('fill','none');
-        p1.setAttribute('d','M12 13c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7z');
-        svg.appendChild(p1);
-        const p2=document.createElementNS(svgNS,'path');
-        p2.setAttribute('fill','currentColor');
-        p2.setAttribute('d','M13 3h-2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2H3a1 1 0 0 0-1 1v2h1v7c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6h1V4c0-.6-.4-1-1-1zM7 2h2c.6 0 1 .4 1 1H6c0-.6.4-1 1-1zm5 11c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7zM6.5 12c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5zm3 0c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5z');
-        svg.appendChild(p2);
-        td.appendChild(svg);
+        const down=document.createElementNS(svgNS,'svg');
+        {
+          down.setAttribute('viewBox','0 0 256 144');
+          const use=document.createElementNS(svgNS,'use');
+          use.setAttribute('href','/admin/symbols.svg#chevron-down');
+          use.setAttribute('stroke','currentColor');
+          use.setAttribute('x','0');
+          use.setAttribute('y','0');
+          use.setAttribute('width','256');
+          use.setAttribute('height','144');
+          down.appendChild(use);
+          down.classList.add('asc',col.attr);
+          down.classList.add('active');
+          th.appendChild(down);
+        }
+        th.addEventListener('click',e=>{
+          e.preventDefault();
+          [up,down].forEach(svg=>svg.classList.remove('active'));
+          if(tbody.getAttribute('data-sort-order')==='asc'){
+            tbody.setAttribute('data-sort-order','desc');
+            th.querySelector('svg.desc').classList.add('active');
+          }else{
+            tbody.setAttribute('data-sort-order','asc');
+            th.querySelector('svg.asc').classList.add('active');
+          }
+        });
       }
-      tr.appendChild(td);
+      headerRow.appendChild(th);
     });
-    tbody.appendChild(tr);
-  });
-  const stylesheet=new CSSStyleSheet();
-  const ruleDesc=`tbody[data-sort-order="desc"] tr{
-    translate:0 calc(
-      3em * (${rows.length-1} - attr(data-index type(<integer>)))
-    );
-  }`;
-  stylesheet.insertRule(ruleDesc);
-  document.adoptedStyleSheets.push(stylesheet);
+    rows.forEach((row,i)=>{
+      const tr=document.createElement('tr');
+      tr.setAttribute('data-index',i);
+      columns.forEach((col,j)=>{
+        const td=document.createElement('td');
+        if(col.attr){
+          const span=document.createElement('span');
+          span.textContent=row[col.attr];
+          td.appendChild(span);
+        }else{
+          const svg=document.createElementNS(svgNS,'svg');
+          svg.setAttribute('viewBox','0 0 16 16');
+          const p1=document.createElementNS(svgNS,'path');
+          p1.setAttribute('fill','none');
+          p1.setAttribute('d','M12 13c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7z');
+          svg.appendChild(p1);
+          const p2=document.createElementNS(svgNS,'path');
+          p2.setAttribute('fill','currentColor');
+          p2.setAttribute('d','M13 3h-2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2H3a1 1 0 0 0-1 1v2h1v7c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6h1V4c0-.6-.4-1-1-1zM7 2h2c.6 0 1 .4 1 1H6c0-.6.4-1 1-1zm5 11c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7zM6.5 12c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5zm3 0c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5z');
+          svg.appendChild(p2);
+          svg.addEventListener('click',e=>{
+            e.preventDefault();
+            if(PublicKeyCredential.PublicKeyCredential.signalUnknownCredential){
+              PublicKeyCredential.signalUnknownCredential({rpId: location.host,credentialId: row.id});
+            }
+            (async()=>{
+              const response=fetch(`/api/user/passkeys/${row.id}`,{method: 'DELETE',credentials: 'include'});
+              if(response.ok){
+                const passkeys=await getPasskeys();
+                if(!passkeys){
+                  location.assign('/login');
+                  return;
+                }
+                updateTable(passkeys);
+              }
+            })();
+          })
+          td.appendChild(svg);
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    const stylesheet=new CSSStyleSheet();
+    const ruleDesc=`tbody[data-sort-order="desc"] tr{
+      translate:0 calc(
+        3em * (${rows.length-1} - attr(data-index type(<integer>)))
+      );
+    }`;
+    stylesheet.insertRule(ruleDesc);
+    document.adoptedStyleSheets.push(stylesheet);
+  };
+  updateTable(passkeys);
 })();
 </script>
 </body>
