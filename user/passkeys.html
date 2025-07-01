@@ -42,6 +42,8 @@ th:first-child{padding-right:3em;cursor:pointer}
 th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
 th:hover>svg{opacity:5}th>svg.active{opacity:1}
 th>svg.desc{top:0}th>svg.asc{bottom:0}
+td>svg{width:2.5em;height:2.5em;padding:.75em}
+td>svg:hover>path:first-child{fill:#1e90ff}
 </style>
 </head>
 <body>
@@ -73,11 +75,11 @@ const getPasskeys=async()=>{
     let response=await fetch('/api/user/passkeys',{credentials:'include'});
     let passkeys=await response.json();
     passkeys.sort((a,b)=>a.timestamp-b.timestamp);
-    const formatter=new Intl.DateTimeFormat('fr',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const formatter=new Intl.DateTimeFormat('fr',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     passkeys.forEach(passkey=>{
       const date=new Date(passkey.timestamp*1000);
       const {year,month,day,hour,minute}=Object.fromEntries(formatter.formatToParts(date).map(it=>[it.type,it.value]));
-      passkey.timestamp=`${year}-${month}-${day} ${hour}:${minute}`;
+      passkey.timestamp=`${year}-${month}-${day} à ${hour}:${minute}`;
     });
     return passkeys;
   }catch(_){
@@ -100,6 +102,7 @@ if(required()){
     {name:'Date',attr:'timestamp'},
     {name:'Navigateur',attr:'brand'},
     {name:'Plateforme',attr:'platform'},
+    {}
   ];
   const rows=passkeys;
   const sorted=columns.map(it=>rows.toSorted((a,b)=>{
@@ -110,7 +113,7 @@ if(required()){
   const svgs=[];
   columns.forEach((col,i)=>{
     const th=document.createElement('th');
-    th.textContent=col.name;
+    th.textContent=col.name||'';
     if(i===0){
       {
         const up=document.createElementNS(svgNS,'svg');
@@ -163,11 +166,32 @@ if(required()){
     tr.setAttribute('data-index',i);
     columns.forEach((col,j)=>{
       const td=document.createElement('td');
-      const span=document.createElement('span');
-      span.textContent=row[col.attr];
-      td.appendChild(span);
-      tr.appendChild(td);
-      tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
+      if(col.attr){
+        const span=document.createElement('span');
+        span.textContent=row[col.attr];
+        td.appendChild(span);
+        tr.appendChild(td);
+        tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
+      }else{
+        const svg=document.createElementNS(svgNS,'svg');
+        svg.setAttribute('viewBox','0 0 16 16');
+        const p1=document.createElementNS(svgNS,'path');
+        p1.setAttribute('fill','none');
+        p1.setAttribute('d','M12 13c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7z');
+        svg.appendChild(p1);
+        const p2=document.createElementNS(svgNS,'path');
+        p2.setAttribute('fill','currentColor');
+        p2.setAttribute('d','M13 3h-2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2H3a1 1 0 0 0-1 1v2h1v7c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6h1V4c0-.6-.4-1-1-1zM7 2h2c.6 0 1 .4 1 1H6c0-.6.4-1 1-1zm5 11c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7zM6.5 12c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5zm3 0c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5z');
+        svg.appendChild(p2);
+
+        use.setAttribute('href','/admin/symbols.svg#chevron-up');
+        use.setAttribute('stroke','currentColor');
+        use.setAttribute('x','0');
+        use.setAttribute('y','0');
+        use.setAttribute('width','256');
+        use.setAttribute('height','144');
+        up.appendChild(use);
+      }
     });
     tbody.appendChild(tr);
   });
