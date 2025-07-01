@@ -57,7 +57,7 @@ td>svg:hover>path:first-child{fill:#1e90ff}
   <h1>Clés d'accès</h1>
   <table>
     <thead><tr></tr></thead>
-    <tbody data-sort-by="timestamp" data-sort-order="asc"></tbody>
+    <tbody data-sort-order="asc"></tbody>
   </table>
 </main>
 <footer>
@@ -105,18 +105,13 @@ if(required()){
     {}
   ];
   const rows=passkeys;
-  const sorted=columns.map(it=>rows.toSorted((a,b)=>{
-    const c=a[it.attr];const d=b[it.attr];
-    if(c<d) return -1;if(c>d) return 1;return 0;
-  }));
   const svgNS='http://www.w3.org/2000/svg';
-  const svgs=[];
   columns.forEach((col,i)=>{
     const th=document.createElement('th');
     th.textContent=col.name||'';
     if(i===0){
+      const up=document.createElementNS(svgNS,'svg');
       {
-        const up=document.createElementNS(svgNS,'svg');
         up.setAttribute('viewBox','0 0 256 144');
         const use=document.createElementNS(svgNS,'use');
         use.setAttribute('href','/admin/symbols.svg#chevron-up');
@@ -128,10 +123,9 @@ if(required()){
         up.appendChild(use);
         up.classList.add('desc',col.attr);
         th.appendChild(up);
-        svgs.push(up);
       }
+      const down=document.createElementNS(svgNS,'svg');
       {
-        const down=document.createElementNS(svgNS,'svg');
         down.setAttribute('viewBox','0 0 256 144');
         const use=document.createElementNS(svgNS,'use');
         use.setAttribute('href','/admin/symbols.svg#chevron-down');
@@ -144,19 +138,17 @@ if(required()){
         down.classList.add('asc',col.attr);
         down.classList.add('active');
         th.appendChild(down);
-        svgs.push(down);
       }
       th.addEventListener('click',e=>{
         e.preventDefault();
-        svgs.forEach(svg=>svg.classList.remove('active'));
-        if(tbody.getAttribute('data-sort-by')===col.attr&&tbody.getAttribute('data-sort-order')==='asc'){
+        [up,down].forEach(svg=>svg.classList.remove('active'));
+        if(tbody.getAttribute('data-sort-order')==='asc'){
           tbody.setAttribute('data-sort-order','desc');
           th.querySelector('svg.desc').classList.add('active');
         }else{
           tbody.setAttribute('data-sort-order','asc');
           th.querySelector('svg.asc').classList.add('active');
         }
-        tbody.setAttribute('data-sort-by',col.attr);
       });
     }
     headerRow.appendChild(th);
@@ -170,8 +162,6 @@ if(required()){
         const span=document.createElement('span');
         span.textContent=row[col.attr];
         td.appendChild(span);
-        tr.appendChild(td);
-        tr.setAttribute(`data-${col.attr}-index`,sorted[j].indexOf(row));
       }else{
         const svg=document.createElementNS(svgNS,'svg');
         svg.setAttribute('viewBox','0 0 16 16');
@@ -185,24 +175,17 @@ if(required()){
         svg.appendChild(p2);
         td.appendChild(svg);
       }
+      tr.appendChild(td);
     });
     tbody.appendChild(tr);
   });
   const stylesheet=new CSSStyleSheet();
-  columns.forEach(col=>{
-    const ruleAsc=`tbody[data-sort-by="${col.attr}"][data-sort-order="asc"] tr{
-      translate:0 calc(
-        3em * (attr(data-${col.attr}-index type(<integer>)) - attr(data-index type(<integer>)))
-      );
-    }`;
-    stylesheet.insertRule(ruleAsc);
-    const ruleDesc=`tbody[data-sort-by="${col.attr}"][data-sort-order="desc"] tr{
-      translate:0 calc(
-        3em * ((${rows.length-1} - attr(data-${col.attr}-index type(<integer>))) - attr(data-index type(<integer>)))
-      );
-    }`;
-    stylesheet.insertRule(ruleDesc);
-  });
+  const ruleDesc=`tbody[data-sort-order="desc"] tr{
+    translate:0 calc(
+      3em * (${rows.length-1} - attr(data-index type(<integer>)))
+    );
+  }`;
+  stylesheet.insertRule(ruleDesc);
   document.adoptedStyleSheets.push(stylesheet);
 })();
 </script>
