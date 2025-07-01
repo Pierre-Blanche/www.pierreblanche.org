@@ -177,7 +177,7 @@ if(required()){
           svg.appendChild(p2);
           svg.addEventListener('click',e=>{
             e.preventDefault();
-            if(PublicKeyCredential.PublicKeyCredential.signalUnknownCredential){
+            if(PublicKeyCredential.signalUnknownCredential){
               PublicKeyCredential.signalUnknownCredential({rpId: location.host,credentialId: row.id});
             }
             (async()=>{
