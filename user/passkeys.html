@@ -181,7 +181,7 @@ if(required()){
               PublicKeyCredential.signalUnknownCredential({rpId: location.host,credentialId: row.id});
             }
             (async()=>{
-              const response=fetch(`/api/user/passkeys/${row.id}`,{method: 'DELETE',credentials: 'include'});
+              const response=await fetch(`/api/user/passkeys/${row.id}`,{method: 'DELETE',credentials: 'include'});
               if(response.ok){
                 const passkeys=await getPasskeys();
                 if(!passkeys){
