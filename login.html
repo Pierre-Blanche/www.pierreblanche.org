@@ -107,15 +107,15 @@ p{text-align:justify;text-wrap:pretty}
         <span>email</span>
       </label>
       <label>
-        <input type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
+        <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
         <span>nom</span>
       </label>
       <label>
-        <input type="text" name="first_name" value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
+        <input type="text" name="given-name" value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
         <span>prénom</span>
       </label>
       <label>
-        <input type="text" name="_dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" placeholder="date de naissance" tabindex="5">
+        <input type="text" name="_dob" value="" pattern="[12][0-9]{3}-[01][0-9]-[0123][0-9]" autocomplete="off" placeholder="date de naissance" tabindex="5">
         <span>date de naissance au </span>
         <span>format: aaaa-mm-dd &nbsp; ex: 2000-01-31</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -142,11 +142,11 @@ p{text-align:justify;text-wrap:pretty}
         <span>email</span>
       </label>
       <label>
-        <input type="text" name="last_name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
+        <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
         <span>nom</span>
       </label>
       <label>
-        <input type="text" name="first_name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
+        <input type="text" name="given-name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
         <span>prénom</span>
       </label>
       <label>
@@ -290,8 +290,8 @@ if(!required()){
     });
     form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes: true}));
     const emailInput=form.querySelector('input[name="email"]');
-    const lastNameInput=form.querySelector('input[name="last_name"]');
-    const firstNameInput=form.querySelector('input[name="first_name"]');
+    const lastNameInput=form.querySelector('input[name="family-name"]');
+    const firstNameInput=form.querySelector('input[name="given-name"]');
     const dobInput=form.querySelector('input[name="_dob"]');
     const dobButton=form.querySelector('input[name="_dob"]~svg');
     const _dobInput=form.querySelector('input[name="dob"]');
@@ -355,8 +355,8 @@ if(!required()){
     });
     form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes: true}));
     const emailInput=form.querySelector('input[name="email"]');
-    const lastNameInput=form.querySelector('input[name="last_name"]');
-    const firstNameInput=form.querySelector('input[name="first_name"]');
+    const lastNameInput=form.querySelector('input[name="family-name"]');
+    const firstNameInput=form.querySelector('input[name="given-name"]');
     const dobInput=form.querySelector('input[name="_dob"]');
     const dobButton=form.querySelector('input[name="_dob"]~svg');
     const _dobInput=form.querySelector('input[name="dob"]');
