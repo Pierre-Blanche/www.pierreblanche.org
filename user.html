@@ -104,7 +104,7 @@ if(required()){
     return;
   }
   console.log(user);
-  const {session_expiration_timestamp,session_from_passkey,admin}=user;
+  const {session_expiration_timestamp,session_passkey_id,admin}=user;
   Object.entries(user).forEach(([k,v])=>{
     const el=document.getElementById(k);
     if(el) el.textContent=v;
@@ -115,7 +115,7 @@ if(required()){
     document.querySelector('html').getAttribute('lang')??'fr-FR',
     {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}
   ).formatToParts(expirationDate).map(it=>[it.type,it.value]));
-  if(session_from_passkey){
+  if(session_passkey_id){
     sessionInfoElement.innerHTML=`Connexion par <a href="/user/passkeys">clé d'accès</a> valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
   }else{
     sessionInfoElement.textContent=`Connexion par lien unique valable jusqu'à ${year}-${month}-${day} ${hour}:${minute}`;
