@@ -196,7 +196,6 @@ if(required()){
     rows.forEach((row,i)=>{
       const tr=document.createElement('tr');
       tr.setAttribute('data-index',i);
-      tr.setAttribute('tabindex',i+5);
       if(row.is_current_session_passkey){
         tr.classList.add('is-current-session-passkey');
       }
@@ -208,6 +207,7 @@ if(required()){
           td.appendChild(span);
         }else{
           const svg=document.createElementNS(svgNS,'svg');
+          tr.setAttribute('tabindex',i+5);
           svg.setAttribute('role','button');
           svg.setAttribute('tabindex','0');
           svg.setAttribute('viewBox','0 0 16 16');
