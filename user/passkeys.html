@@ -157,6 +157,26 @@ if(required()){
             th.querySelector('svg.asc').classList.add('active');
           }
         });
+        up.addEventListener('keydown',e=>{
+          if(e.key==='Enter'){
+            e.preventDefault();
+            if(tbody.getAttribute('data-sort-order')==='desc'){
+              [up,down].forEach(svg=>svg.classList.remove('active'));
+              tbody.setAttribute('data-sort-order','asc');
+              th.querySelector('svg.asc').classList.add('active');
+            }
+          }
+        });
+        down.addEventListener('keydown',e=>{
+          if(e.key==='Enter'){
+            e.preventDefault();
+            if(tbody.getAttribute('data-sort-order')==='asc'){
+              [up,down].forEach(svg=>svg.classList.remove('active'));
+              tbody.setAttribute('data-sort-order','desc');
+              th.querySelector('svg.desc').classList.add('active');
+            }
+          }
+        });
       }
       headerRow.appendChild(th);
     });
