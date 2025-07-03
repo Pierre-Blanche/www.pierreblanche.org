@@ -32,10 +32,11 @@ table{margin-top:1.5em;font-size:min(3vw,1em);border-spacing:0}
 td{padding:0 1em}
 thead>tr{height:2em;padding:.5em}
 tbody>tr{position:relative;height:3em;max-height:3em;translate:0 0;transition:translate 600ms ease-in-out}
-tbody>tr:after{content:'';position:absolute;background:#6a6a6244;top:.175em;left:.175em;right:.175em;height:2.65em;/*inset:.175em;*/border-radius:.5em;z-index:-1}
+tbody>tr:after{content:'';position:absolute;--bg:#6a6a6244;background:var(--bg);top:.175em;left:.175em;right:.175em;height:2.65em;/*inset:.175em;*/border-radius:.5em;z-index:-1}
 tbody>tr>td>span{display:block;line-height:1}
 tbody>tr:hover>td>span{scale:1.1}
-tbody>tr:hover:after{background:#6a6a6288;top:.1em;left:-.5em;right:-.5em;height:2.8em/*;inset:.1em -.5em*/}
+tbody>tr:hover:after{background:rgb(from var(--bg) r g b / 50%);top:.1em;left:-.5em;right:-.5em;height:2.8em/*;inset:.1em -.5em*/}
+tbody>tr:after.is-current-session-passkey{--bg:#5c3d5c44}
 td,th{position:relative;vertical-align:middle;text-align:start}
 th{padding:0 1.25em 0 1.25em;font-size:.8em;font-variation-settings:"wght" 22,"wdth" 500}
 th:first-child{padding-right:3em;cursor:pointer}
@@ -158,6 +159,9 @@ if(required()){
     rows.forEach((row,i)=>{
       const tr=document.createElement('tr');
       tr.setAttribute('data-index',i);
+      if(row.is_current_session_passkey){
+        tr.classList.add('is-current-session-passkey');
+      }
       columns.forEach((col,j)=>{
         const td=document.createElement('td');
         if(col.attr){
