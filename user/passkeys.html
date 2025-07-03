@@ -44,7 +44,7 @@ th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity
 th:hover>svg{opacity:5}th>svg.active{opacity:1}
 th>svg.desc{top:0}th>svg.asc{bottom:0}
 td>svg{vertical-align:middle;width:2.5em;height:2em;padding:.5em;cursor:pointer}
-td>svg:hover>path:first-child{fill:#1e90ff}
+td>:is(svg:hover,svg:focus-visible)>path:first-child{fill:#1e90ff}
 </style>
 </head>
 <body>
@@ -115,6 +115,8 @@ if(required()){
       if(i===0){
         const up=document.createElementNS(svgNS,'svg');
         {
+          up.setAttribute('role','button');
+          up.setAttribute('tabindex','0');
           up.setAttribute('viewBox','0 0 256 144');
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-up');
@@ -129,6 +131,8 @@ if(required()){
         }
         const down=document.createElementNS(svgNS,'svg');
         {
+          down.setAttribute('role','button');
+          down.setAttribute('tabindex','0');
           down.setAttribute('viewBox','0 0 256 144');
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-down');
@@ -162,7 +166,7 @@ if(required()){
       if(row.is_current_session_passkey){
         tr.classList.add('is-current-session-passkey');
       }
-      columns.forEach((col,j)=>{
+      columns.forEach(col=>{
         const td=document.createElement('td');
         if(col.attr){
           const span=document.createElement('span');
@@ -170,6 +174,8 @@ if(required()){
           td.appendChild(span);
         }else{
           const svg=document.createElementNS(svgNS,'svg');
+          svg.setAttribute('role','button');
+          svg.setAttribute('tabindex','0');
           svg.setAttribute('viewBox','0 0 16 16');
           const p1=document.createElementNS(svgNS,'path');
           p1.setAttribute('fill','none');
