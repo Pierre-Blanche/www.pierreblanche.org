@@ -155,7 +155,7 @@ if(required()){
     emailField.addEventListener('keydown',listener);
     emailField.focus();
   });
-  if(session_from_passkey) return;
+  if(session_passkey_id) return;
   const signal=AbortSignal.timeout(30_000);
   const metadata=JSON.stringify({uuid:crypto.randomUUID()});
   try{
