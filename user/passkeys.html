@@ -201,7 +201,7 @@ if(required()){
     const stylesheet=new CSSStyleSheet();
     const ruleDesc=`tbody[data-sort-order="desc"] tr{
       translate:0 calc(
-        3em * (${rows.length-1} - attr(data-index type(<integer>)))
+        3em * (${rows.length-1} - 2 * attr(data-index type(<integer>)))
       );
     }`;
     stylesheet.insertRule(ruleDesc);
