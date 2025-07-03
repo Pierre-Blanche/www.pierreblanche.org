@@ -35,7 +35,7 @@ tbody>tr{position:relative;height:3em;max-height:3em;translate:0 0;transition:tr
 tbody>tr:after{content:'';position:absolute;--bg:#6a6a6244;background:var(--bg);top:.175em;left:.175em;right:.175em;height:2.65em;/*inset:.175em;*/border-radius:.5em;z-index:-1}
 tbody>tr>td>span{display:block;line-height:1}
 tbody>tr:hover>td>span{scale:1.1}
-tbody>tr:hover:after{background:rgb(from var(--bg) r g b / 50%);top:.1em;left:-.5em;right:-.5em;height:2.8em/*;inset:.1em -.5em*/}
+tbody>tr:hover:after{background:rgb(from var(--bg) r g b / 50%);top:.1em;left:-.  5em;right:-.5em;height:2.8em/*;inset:.1em -.5em*/}
 tbody>tr:after.is-current-session-passkey{--bg:#5c3d5c44}
 td,th{position:relative;vertical-align:middle;text-align:start}
 th{padding:0 1.25em 0 1.25em;font-size:.8em;font-variation-settings:"wght" 22,"wdth" 500}
@@ -49,9 +49,9 @@ td>:is(svg:hover,svg:focus-visible)>path:first-child{fill:#1e90ff}
 </head>
 <body>
 <header>
-  <a href="/user">Page adhérent</a>
+  <a href="/user" tabindex="1">Page adhérent</a>
   <div></div>
-  <a href="/api/auth/disconnect_user">Déconnexion</a>
+  <a href="/api/auth/disconnect_user" tabindex="2">Déconnexion</a>
 </header>
 <img src="/favicon.svg" alt="Logo de Pierre Blanche">
 <main>
@@ -116,7 +116,7 @@ if(required()){
         const up=document.createElementNS(svgNS,'svg');
         {
           up.setAttribute('role','button');
-          up.setAttribute('tabindex','0');
+          up.setAttribute('tabindex','3');
           up.setAttribute('viewBox','0 0 256 144');
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-up');
@@ -132,7 +132,7 @@ if(required()){
         const down=document.createElementNS(svgNS,'svg');
         {
           down.setAttribute('role','button');
-          down.setAttribute('tabindex','0');
+          down.setAttribute('tabindex','4');
           down.setAttribute('viewBox','0 0 256 144');
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-down');
@@ -152,18 +152,28 @@ if(required()){
           if(tbody.getAttribute('data-sort-order')==='asc'){
             tbody.setAttribute('data-sort-order','desc');
             th.querySelector('svg.desc').classList.add('active');
+            tbody.querySelectorAll('tr svg').forEach((it,i)=>{
+              it.setAttribute('tabindex',i+5);
+            });
           }else{
             tbody.setAttribute('data-sort-order','asc');
             th.querySelector('svg.asc').classList.add('active');
+            const n=rows.length;
+            tbody.querySelectorAll('tr svg').forEach((it,i)=>{
+              it.setAttribute('tabindex',4+n-i);
+            });
           }
         });
         up.addEventListener('keydown',e=>{
           if(e.key==='Enter'){
             e.preventDefault();
             if(tbody.getAttribute('data-sort-order')==='asc'){
-              [up,down].forEach(svg=>svg.classList.remove('active'));
+              down.classList.remove('active');
               tbody.setAttribute('data-sort-order','desc');
-              th.querySelector('svg.desc').classList.add('active');
+              up.classList.add('active');
+              tbody.querySelectorAll('tr svg').forEach((it,i)=>{
+                it.setAttribute('tabindex',i+5);
+              });
             }
           }
         });
@@ -171,9 +181,12 @@ if(required()){
           if(e.key==='Enter'){
             e.preventDefault();
             if(tbody.getAttribute('data-sort-order')==='desc'){
-              [up,down].forEach(svg=>svg.classList.remove('active'));
+              up.classList.remove('active');
               tbody.setAttribute('data-sort-order','asc');
-              th.querySelector('svg.asc').classList.add('active');
+              down.classList.add('active');
+              tbody.querySelectorAll('tr svg').forEach((it,i)=>{
+                it.setAttribute('tabindex',4+n-i);
+              });
             }
           }
         });
@@ -183,6 +196,7 @@ if(required()){
     rows.forEach((row,i)=>{
       const tr=document.createElement('tr');
       tr.setAttribute('data-index',i);
+      tr.setAttribute('tabindex',i+5);
       if(row.is_current_session_passkey){
         tr.classList.add('is-current-session-passkey');
       }
