@@ -207,9 +207,8 @@ if(required()){
           td.appendChild(span);
         }else{
           const svg=document.createElementNS(svgNS,'svg');
-          tr.setAttribute('tabindex',i+5);
           svg.setAttribute('role','button');
-          svg.setAttribute('tabindex','0');
+          svg.setAttribute('tabindex',i+5);
           svg.setAttribute('viewBox','0 0 16 16');
           const p1=document.createElementNS(svgNS,'path');
           p1.setAttribute('fill','none');
