@@ -160,20 +160,20 @@ if(required()){
         up.addEventListener('keydown',e=>{
           if(e.key==='Enter'){
             e.preventDefault();
-            if(tbody.getAttribute('data-sort-order')==='desc'){
+            if(tbody.getAttribute('data-sort-order')==='asc'){
               [up,down].forEach(svg=>svg.classList.remove('active'));
-              tbody.setAttribute('data-sort-order','asc');
-              th.querySelector('svg.asc').classList.add('active');
+              tbody.setAttribute('data-sort-order','desc');
+              th.querySelector('svg.desc').classList.add('active');
             }
           }
         });
         down.addEventListener('keydown',e=>{
           if(e.key==='Enter'){
             e.preventDefault();
-            if(tbody.getAttribute('data-sort-order')==='asc'){
+            if(tbody.getAttribute('data-sort-order')==='desc'){
               [up,down].forEach(svg=>svg.classList.remove('active'));
-              tbody.setAttribute('data-sort-order','desc');
-              th.querySelector('svg.desc').classList.add('active');
+              tbody.setAttribute('data-sort-order','asc');
+              th.querySelector('svg.asc').classList.add('active');
             }
           }
         });
@@ -205,22 +205,29 @@ if(required()){
           p2.setAttribute('fill','currentColor');
           p2.setAttribute('d','M13 3h-2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2H3a1 1 0 0 0-1 1v2h1v7c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6h1V4c0-.6-.4-1-1-1zM7 2h2c.6 0 1 .4 1 1H6c0-.6.4-1 1-1zm5 11c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1V6h8v7zM6.5 12c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5zm3 0c.3 0 .5-.2.5-.5v-4a.5.5 0 0 0-1 0v4c0 .3.2.5.5.5z');
           svg.appendChild(p2);
-          svg.addEventListener('click',e=>{
-            e.preventDefault();
+          const action=async()=>{
             if(PublicKeyCredential.signalUnknownCredential){
               PublicKeyCredential.signalUnknownCredential({rpId: location.host,credentialId: row.id});
             }
-            (async()=>{
-              const response=await fetch(`/api/user/passkeys/${row.id}`,{method: 'DELETE',credentials: 'include'});
-              if(response.ok){
-                const passkeys=await getPasskeys();
-                if(!passkeys){
-                  location.assign('/login');
-                  return;
-                }
-                updateTable(passkeys);
+            const response=await fetch(`/api/user/passkeys/${row.id}`,{method: 'DELETE',credentials: 'include'});
+            if(response.ok){
+              const passkeys=await getPasskeys();
+              if(!passkeys){
+                location.assign('/login');
+                return;
               }
-            })();
+              updateTable(passkeys);
+            }
+          };
+          svg.addEventListener('click',e=>{
+            e.preventDefault();
+            action();
+          })
+          svg.addEventListener('keydown',e=>{
+            if(e.key==='Enter'){
+              e.preventDefault();
+              action();
+            }
           })
           td.appendChild(svg);
         }
