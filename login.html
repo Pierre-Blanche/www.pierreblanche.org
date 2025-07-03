@@ -469,7 +469,8 @@ if(!required()){
           PublicKeyCredential.signalUnknownCredential({rpId:location.host,credentialId:credential.id});
         }
       }
-    }catch(_){
+    }catch(e){
+      console.error(e);
     }
     passkeyInput.onclick=prompt;
     passkeyInput.onkeydown=prompt;
