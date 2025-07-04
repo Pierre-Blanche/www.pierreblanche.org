@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>🔢 Pierre Blanche</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="only dark">
 <meta name="theme-color" content="#282828">
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
@@ -14,7 +15,7 @@
 <style>
 :where(*){margin:0;padding:0;box-sizing:border-box}
 html{
-  width:100%;height:100%;background:#000;color:#bbb;color-scheme:dark;
+  width:100%;height:100%;background:#000;color:#bbb;
   font:700 min(17.5vw,60vh)/1.25 __kadwa__;letter-spacing:.1em;
 }
 body{position:relative;min-height:100%;display:grid;place-items:center}
@@ -35,7 +36,7 @@ const getSecret=async()=>{
   }
   return await response.text();
 };
-const [secret,{TOTP}]=await Promise.all([getSecret(),import("/user/totp.mjs")]);
+const [secret,{TOTP}]=await Promise.all([getSecret(),import("/user/admin/totp.mjs")]);
 const spans=[...document.querySelectorAll('div#code>span')];
 let next=Date.now();
 let timeout;
