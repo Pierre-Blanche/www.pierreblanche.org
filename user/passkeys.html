@@ -42,9 +42,10 @@ th{padding:0 1.25em 0 1.25em;font-size:.8em;font-variation-settings:"wght" 22,"w
 th:first-child{padding-right:3em;cursor:pointer}
 th>svg{position:absolute;cursor:pointer;right:0;height:1em;padding:.25em;opacity:.25}
 th:hover>svg{opacity:5}th>svg.active{opacity:1}
+th>svg:focus-visible{color:#1e90ff;outline:none}
 th>svg.desc{top:0}th>svg.asc{bottom:0}
 td>svg{vertical-align:middle;width:2.5em;height:2em;padding:.5em;cursor:pointer}
-td>:is(svg:hover,svg:focus-visible)>path:first-child{fill:#1e90ff}
+td>svg:is(:hover,:focus-visible)>path:first-child{fill:#1e90ff;outline:none}
 </style>
 </head>
 <body>
