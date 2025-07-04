@@ -118,6 +118,9 @@ if(required()){
           up.setAttribute('role','button');
           up.setAttribute('tabindex','3');
           up.setAttribute('viewBox','0 0 256 144');
+          const title=document.createElementNS(svgNS,'title');
+          title.textContent='Tri descendant par date';
+          up.appendChild(title);
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-up');
           use.setAttribute('stroke','currentColor');
@@ -134,6 +137,9 @@ if(required()){
           down.setAttribute('role','button');
           down.setAttribute('tabindex','4');
           down.setAttribute('viewBox','0 0 256 144');
+          const title=document.createElementNS(svgNS,'title');
+          title.textContent='Tri ascendant par date';
+          down.appendChild(title);
           const use=document.createElementNS(svgNS,'use');
           use.setAttribute('href','/admin/symbols.svg#chevron-down');
           use.setAttribute('stroke','currentColor');
@@ -207,6 +213,9 @@ if(required()){
           td.appendChild(span);
         }else{
           const svg=document.createElementNS(svgNS,'svg');
+          const title=document.createElementNS(svgNS,'title');
+          title.textContent='Supprimer';
+          svg.appendChild(title);
           svg.setAttribute('role','button');
           svg.setAttribute('tabindex',i+5);
           svg.setAttribute('viewBox','0 0 16 16');
