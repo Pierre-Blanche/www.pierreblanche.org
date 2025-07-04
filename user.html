@@ -127,7 +127,7 @@ if(required()){
   const emailField=document.querySelector('#email');
   const editEmailButton=document.querySelector('#email+svg');
   const pendingEmailButton=document.querySelector('#email+svg+svg');
-  editEmailButton.addEventListener('click',async()=>{
+  const action=async()=>{
     emailField.setAttribute('contenteditable','plaintext-only');
     const content=emailField.textContent;
     const listener=e=>{
@@ -155,7 +155,17 @@ if(required()){
     emailField.addEventListener('blur',listener);
     emailField.addEventListener('keydown',listener);
     emailField.focus();
+  };
+  editEmailButton.addEventListener('click',e=>{
+    e.preventDefault();
+    action();
   });
+  editEmailButton.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      action();
+    }
+  })
   if(session_passkey_id) return;
   const signal=AbortSignal.timeout(30_000);
   const metadata=JSON.stringify({uuid:crypto.randomUUID()});
