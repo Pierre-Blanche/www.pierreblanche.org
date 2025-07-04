@@ -40,8 +40,8 @@ main>*:nth-child(4){font:200 1em/1 __cascadia__;}
 main>*:nth-child(5){font-size:1em;line-height:1.5;padding-block:1em;max-width:30ch}
 main>*:nth-child(6){font-size:1em;color:#a33b2f;font-variation-settings:"wght" 120,"wdth" 500}
 main>*:empty{display:none}
-main span{max-width:75vw;text-overflow:ellipsis;overflow:hidden}
-main span[contenteditable]{text-overflow:revert}
+#email{max-width:75vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#email[contenteditable]{text-overflow:revert}
 main svg{width:1em;height:1em;opacity:.75;cursor:pointer}
 main svg:hover{opacity:1}
 main svg:is(:hover,:focus-visible,:focus) .highlight{fill:#1e90ff}
