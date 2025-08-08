@@ -61,7 +61,7 @@ input:is([type="text"],[type="email"],[type="number"]){
 }
 form input:is([type="text"],[type="email"],[type="number"],[type="date"]):focus-visible{outline:none;border-color:#1e90ff}
 form>label{position:relative;line-height:1}
-input~span{visibility:hidden;overflow-x:hidden;font-size:.75em;position:relative;top:0;color:#1e90ff;font-style:italic}
+input:not([type="radio"])~span{visibility:hidden;overflow-x:hidden;font-size:.75em;position:relative;top:0;color:#1e90ff;font-style:italic}
 input:focus-within:not(:placeholder-shown)+span{position:relative;visibility:visible;width:auto}
 input:focus-within:not(:placeholder-shown)+span+span{color:#1e90ff}
 input[name="_dob"]+span{position:absolute}
@@ -72,6 +72,13 @@ label svg:hover{opacity:1}
 input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;padding:0}
 input[type="number"]{-moz-appearance:textfield;margin-top:1em}
 label:has(input[name="totp"].hidden){visibility:hidden}
+div.relationship{padding-left:3px;display:flex;gap:2em;justify-content:space-between;align-items:center}
+input[type="radio"]+span{padding-left:1ch;cursor:pointer}
+input[type="radio"]{appearance:none;display:inline-block;font-size:inherit;width:.67em;height:.67em;border-radius:50%;outline-offset:2px;outline:.1em solid #888;background:none;margin:0;padding:0;cursor:pointer}
+input[type="radio"]:checked{background:currentColor;outline-color:currentColor}
+input[type="radio"]:focus-visible{outline-color:#1e90ff}
+input[type="radio"]:focus-visible+span{color:#1e90ff}
+input[type="radio"]:disabled{opacity:.5}
 form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
 input:user-invalid,input.modified:invalid,input.invalid::placeholder{color:#c22e22}
@@ -146,7 +153,7 @@ p{text-align:justify;text-wrap:pretty}
       </label>
       <label>
         <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
-        <span>nom</span>
+      <span>nom</span>
       </label>
       <label>
         <input type="text" name="given-name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
@@ -172,16 +179,30 @@ p{text-align:justify;text-wrap:pretty}
   <div inert>
     <p>Pour l'inscription d'un enfant, vous devez également renseigner les coordonnées d'un parent ou représentant légal.
     <form>
+      <div class="relationship">
+        <label>
+          <input type="radio" name="relationship" value="father" required tabindex="10">
+          <span>Père</span>
+        </label>
+        <label>
+          <input type="radio" name="relationship" value="mother" required tabindex="11">
+          <span>Mère</span>
+        </label>
+        <label>
+          <input type="radio" name="relationship" value="other" required tabindex="12">
+          <span>Autre</span>
+        </label>
+      </div>
       <label>
-        <input type="email" name="email" required value="" autocomplete="email" placeholder="email" tabindex="2">
+        <input type="email" name="email" required value="" autocomplete="email" placeholder="email" tabindex="13">
         <span>email</span>
       </label>
       <label>
-        <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
+        <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="14">
         <span>nom</span>
       </label>
       <label>
-        <input type="text" name="given-name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
+        <input type="text" name="given-name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="15">
         <span>prénom</span>
       </label>
       <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" aria-hidden="true">-->
@@ -189,7 +210,7 @@ p{text-align:justify;text-wrap:pretty}
         <input type="number" name="totp" value="" placeholder="code de pré-autorisation" tabindex="-1">
         <span>code de pré-autorisation</span>
       </label>
-      <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
+      <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="19"><input name="submit" type="submit" value="OK" tabindex="18"></div>
     </form>
   </div>
   <div inert>
