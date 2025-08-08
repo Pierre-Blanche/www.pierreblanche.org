@@ -71,6 +71,7 @@ label svg{position:absolute;width:2.25em;height:2.25em;padding:.5em;right:-.5em;
 label svg:hover{opacity:1}
 input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;padding:0}
 input[type="number"]{-moz-appearance:textfield;margin-top:1em}
+label:has(input[name="totp"].hidden){visibility:hidden}
 form .buttons{display:flex;flex-direction:row-reverse;gap:.5em;margin-top:1em}
 ::placeholder{font-style:italic}
 input:user-invalid,input.modified:invalid,input.invalid::placeholder{color:#c22e22}
@@ -135,8 +136,9 @@ p{text-align:justify;text-wrap:pretty}
   </div>
   <div inert>
     <p>Pour votre demande d'inscription, vous devez renseigner une adresse email de contact,
-      ainsi que votre nom et date de naissance.
+      ainsi qu'un nom et une date de naissance.
     <p>Les demandes sont ensuite acceptées ou non en fonction de notre capacité d'accueil.
+    <p>Les enfants ne sont acceptés qu'à partir de l'âge de 10 ans (au 1er Janvier <span><script>document.currentScript.parentElement.textContent=`${new Date().getFullYear()+1}`</script></span>).
     <form>
       <label>
         <input type="email" name="email" required value="" autocomplete="email" placeholder="email" tabindex="2">
@@ -160,6 +162,29 @@ p{text-align:justify;text-wrap:pretty}
         <input type="date" name="dob" autocomplete="bday" value="" tabindex="-1">
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" aria-hidden="true">-->
+      <label>
+        <input type="number" name="totp" class="hidden" value="" placeholder="code de pré-autorisation" tabindex="-1">
+        <span>code de pré-autorisation</span>
+      </label>
+      <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
+    </form>
+  </div>
+  <div inert>
+    <p>Pour l'inscription d'un enfant, vous devez également renseigner les coordonnées d'un parent ou représentant légal.
+    <form>
+      <label>
+        <input type="email" name="email" required value="" autocomplete="email" placeholder="email" tabindex="2">
+        <span>email</span>
+      </label>
+      <label>
+        <input type="text" name="family-name" required value="" autocomplete="family-name" placeholder="nom" tabindex="3">
+        <span>nom</span>
+      </label>
+      <label>
+        <input type="text" name="given-name" required value="" autocomplete="given-name" placeholder="prénom" tabindex="4">
+        <span>prénom</span>
+      </label>
+      <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" aria-hidden="true">-->
       <label>
         <input type="number" name="totp" value="" placeholder="code de pré-autorisation" tabindex="-1">
         <span>code de pré-autorisation</span>
@@ -191,8 +216,8 @@ if(!required()){
   let abortController=null;
   const defaultDate=new Date(2000,0,31,12,0,0,0);
   const tabs=[...document.querySelectorAll('main>div')];
-  const [loginTab,otpRequestTab,otpSentTab,registerTab,registerConfirmationTab,errorTab]=tabs;
-  const tabLevels=[0,1,2,1,2,2];
+  const [loginTab,otpRequestTab,otpSentTab,registerTab,registerParentTab,registerConfirmationTab,errorTab]=tabs;
+  const tabLevels=[0,1,3,1,2,3,3];
   history.replaceState(0,'',null);
   window.addEventListener('popstate',e=>{
     const tab=tabs[e.state];
@@ -205,6 +230,7 @@ if(!required()){
         switch(tabLevels[i]){
           case 0: break;
           case 1: history.pushState(i,'',null); break;
+          case 2: history.pushState(i,'',null); break;
           default: history.replaceState(i,null); break;
         }
       }
@@ -354,19 +380,26 @@ if(!required()){
         }
       });
     });
-    form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes: true}));
+    form.querySelectorAll('input[type]').forEach(it=>observer.observe(it,{attributes:true}));
     const emailInput=form.querySelector('input[name="email"]');
     const lastNameInput=form.querySelector('input[name="family-name"]');
     const firstNameInput=form.querySelector('input[name="given-name"]');
+    const totpInput=form.querySelector('input[name="totp"]');
     const dobInput=form.querySelector('input[name="_dob"]');
     const dobButton=form.querySelector('input[name="_dob"]~svg');
     const _dobInput=form.querySelector('input[name="dob"]');
-    const totpInput=form.querySelector('input[name="totp"]');
     dobButton.addEventListener('click',e=>{
       e.preventDefault();
       e.stopPropagation();
       _dobInput.showPicker();
     });
+    const updateTotpVisibility=_=>{
+      const year=parseInt(/([12][0-9]{3}-.*)/.exec(dobInput.value)?.[1]);
+      if(isNaN(year)||year>new Date().getFullYear()-16) totpInput.classList.add('hidden');
+      else totpInput.classList.remove('hidden');
+    };
+    dobInput.addEventListener('change',updateTotpVisibility);
+    dobInput.addEventListener('keyup',updateTotpVisibility);
     _dobInput.valueAsDate=new Date(2000,0,31,12,0,0,0);
     _dobInput.addEventListener('change',_=>{
       const dob=_dobInput?.valueAsDate;
@@ -379,6 +412,32 @@ if(!required()){
     });
     form.addEventListener('submit',async(e)=>{
       e.preventDefault();
+      const showInvalid=()=>{
+        dobInput.classList.add('invalid');
+        const reset=()=>{
+          dobInput.oninput=null;
+          dobInput.onchange=null;
+          dobInput.classList.remove('invalid');
+        };
+        const timeout=setTimeout(reset,3000);
+        dobInput.oninput=dobInput.onchange=_=>{
+          clearInterval(timeout);
+          reset();
+        };
+      };
+      const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
+      const y=parseInt(yyyy);
+      const m=parseInt(mm?.replace(/^0/,''));
+      const d=parseInt(dd?.replace(/^0/,''));
+      const currentYear=new Date().getFullYear();
+      if(isNaN(y)||isNaN(m)||isNaN(d)||y>=currentYear-9||y<1901||m<1||m>12||d<1||d>31){
+        showInvalid();
+        return;
+      }
+      if(y>currentYear-16){
+        selectTab(registerParentTab,true);
+        return;
+      }
       const body=new FormData();
       const email=emailInput?.value?.trim();
       if(!email) return;
@@ -389,10 +448,6 @@ if(!required()){
       const firstName=firstNameInput?.value?.trim();
       if(!firstName) return;
       body.append('first_name',firstName);
-      const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
-      const y=parseInt(yyyy);
-      const m=parseInt(mm?.replace(/^0/,''));
-      const d=parseInt(dd?.replace(/^0/,''));
       if(isNaN(y)||isNaN(m)||isNaN(d)&&y>=new Date().getFullYear()||y<1901||m<1&&m>12&&d<1&&d>31) return;
       const dob=`${y}${m.toString().padStart(2,'0')}${d.toString().padStart(2,'0')}`;
       body.append('dob',dob);
@@ -415,16 +470,88 @@ if(!required()){
           reset();
         };
       }else if(response.status===400){
-        emailInput.classList.add('invalid');
+        showInvalid();
+      }else if(response.status>=500) selectTab(errorTab,true);
+    });
+  }
+  {
+    const form=registerTab.querySelector('form');
+    const parentForm=registerParentTab.querySelector('form');
+    const emailInput=form.querySelector('input[name="email"]');
+    const lastNameInput=form.querySelector('input[name="family-name"]');
+    const firstNameInput=form.querySelector('input[name="given-name"]');
+    const dobInput=form.querySelector('input[name="_dob"]');
+    const parentEmailInput=parentForm.querySelector('input[name="email"]');
+    const parentLastNameInput=parentForm.querySelector('input[name="family-name"]');
+    const parentFirstNameInput=parentForm.querySelector('input[name="given-name"]');
+    const totpInput=parentForm.querySelector('input[name="totp"]');
+    form.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const showInvalid=()=>{
+        dobInput.classList.add('invalid');
         const reset=()=>{
-          emailInput.oninput=null;
-          emailInput.classList.remove('invalid');
+          dobInput.oninput=null;
+          dobInput.onchange=null;
+          dobInput.classList.remove('invalid');
         };
         const timeout=setTimeout(reset,3000);
-        emailInput.oninput=_=>{
+        dobInput.oninput=dobInput.onchange=_=>{
           clearInterval(timeout);
           reset();
         };
+      };
+      const [yyyy,mm,dd]=dobInput?.value?.split('-')??[];
+      const y=parseInt(yyyy);
+      const m=parseInt(mm?.replace(/^0/,''));
+      const d=parseInt(dd?.replace(/^0/,''));
+      const currentYear=new Date().getFullYear();
+      if(isNaN(y)||isNaN(m)||isNaN(d)||y>=currentYear-9||y<1901||m<1||m>12||d<1||d>31){
+        showInvalid();
+        history.back();
+        return;
+      }
+      const body=new FormData();
+      const email=emailInput?.value?.trim();
+      if(!email) return;
+      body.append('email',email);
+      const lastName=lastNameInput?.value?.trim();
+      if(!lastName) return;
+      body.append('last_name',lastName);
+      const firstName=firstNameInput?.value?.trim();
+      if(!firstName) return;
+      body.append('first_name',firstName);
+      const dob=`${y}${m.toString().padStart(2,'0')}${d.toString().padStart(2,'0')}`;
+      body.append('dob',dob);
+      const parentEmail=parentEmailInput?.value?.trim();
+      if(!parentEmail) return;
+      body.append('parent_email',parentEmail);
+      const parentLastName=parentLastNameInput?.value?.trim();
+      if(!parentLastName) return;
+      body.append('parent_last_name',parentLastName);
+      const parentFirstName=parentFirstNameInput?.value?.trim();
+      if(!parentFirstName) return;
+      body.append('parent_first_name',parentFirstName);
+      const totp=totpInput?.value?.trim();
+      if(totp) body.append('totp',totp);
+      const response=await fetch('/api/user',{method: 'POST',body});
+      if(response.ok) selectTab(registerConfirmationTab,true);
+      else if(response.status===403){
+        totpInput.classList.add('invalid');
+        totpInput.value='';
+        totpInput.placeholder='code invalide';
+        const reset=()=>{
+          totpInput.oninput=null;
+          totpInput.classList.remove('invalid');
+          totpInput.placeholder='code de pré-autorisation';
+        };
+        const timeout=setTimeout(reset,3000);
+        totpInput.oninput=_=>{
+          clearInterval(timeout);
+          reset();
+        };
+      }else if(response.status===400){
+        showInvalid();
+        history.back();
       }else if(response.status>=500) selectTab(errorTab,true);
     });
   }
