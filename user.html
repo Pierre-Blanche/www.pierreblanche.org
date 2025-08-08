@@ -144,7 +144,11 @@ if(required()){
           if(/^[\x20-\x7f]*$/.test(value)&&value.length>5&&value.substring(1,value.length-4).includes('@')){
             console.log('updating email');
             (async()=>{
-              const response=await fetch('/api/user/email',{method:'POST',body:value,credentials:'include'});
+              const body=JSON.stringify({
+                old_email:content,
+                new_email:value,
+              });
+              const response=await fetch('/api/user/email',{method:'POST',body,credentials:'include'});
               if(response.ok){
                 editEmailButton.style.display='none';
                 pendingEmailButton.style.display='revert';

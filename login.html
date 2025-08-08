@@ -57,7 +57,7 @@ main a{
 input:is([type="text"],[type="email"],[type="number"]){
   appearance:none;color:inherit;font:1em/1.5 __cascadia__;width:clamp(30ch,65vw,48ch);
   border-radius:0;border:0;border-bottom:.1em solid rgb(from currentColor r g b /50%);background:none;
-  padding:.25em 0 0 0;
+  padding:.25em 0 0 0;text-overflow:ellipsis;white-space:nowrap;
 }
 form input:is([type="text"],[type="email"],[type="number"],[type="date"]):focus-visible{outline:none;border-color:#1e90ff}
 form>label{position:relative;line-height:1}
@@ -161,7 +161,7 @@ p{text-align:justify;text-wrap:pretty}
       </label>
     <!--  <input class="turnstile" hidden="hidden" type="text" name="turnstile" value="" aria-hidden="true">-->
       <label>
-        <input type="number" name="otp" value="" placeholder="code de pré-autorisation" tabindex="-1">
+        <input type="number" name="totp" value="" placeholder="code de pré-autorisation" tabindex="-1">
         <span>code de pré-autorisation</span>
       </label>
       <div class="buttons"><input name="cancel" type="button" value="Annuler" tabindex="9"><input name="submit" type="submit" value="OK" tabindex="8"></div>
@@ -361,7 +361,7 @@ if(!required()){
     const dobInput=form.querySelector('input[name="_dob"]');
     const dobButton=form.querySelector('input[name="_dob"]~svg');
     const _dobInput=form.querySelector('input[name="dob"]');
-    const otpInput=form.querySelector('input[name="otp"]');
+    const totpInput=form.querySelector('input[name="totp"]');
     dobButton.addEventListener('click',e=>{
       e.preventDefault();
       e.stopPropagation();
@@ -396,21 +396,21 @@ if(!required()){
       if(isNaN(y)||isNaN(m)||isNaN(d)&&y>=new Date().getFullYear()||y<1901||m<1&&m>12&&d<1&&d>31) return;
       const dob=`${y}${m.toString().padStart(2,'0')}${d.toString().padStart(2,'0')}`;
       body.append('dob',dob);
-      const otp=otpInput?.value?.trim();
-      if(otp) body.append('otp',otp);
+      const totp=totpInput?.value?.trim();
+      if(totp) body.append('totp',totp);
       const response=await fetch('/api/user',{method: 'POST',body});
       if(response.ok) selectTab(registerConfirmationTab,true);
       else if(response.status===403){
-        otpInput.classList.add('invalid');
-        otpInput.value='';
-        otpInput.placeholder='code invalide';
+        totpInput.classList.add('invalid');
+        totpInput.value='';
+        totpInput.placeholder='code invalide';
         const reset=()=>{
-          otpInput.oninput=null;
-          otpInput.classList.remove('invalid');
-          otpInput.placeholder='code de pré-autorisation';
+          totpInput.oninput=null;
+          totpInput.classList.remove('invalid');
+          totpInput.placeholder='code de pré-autorisation';
         };
         const timeout=setTimeout(reset,3000);
-        otpInput.oninput=_=>{
+        totpInput.oninput=_=>{
           clearInterval(timeout);
           reset();
         };
