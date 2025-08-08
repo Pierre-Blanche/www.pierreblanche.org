@@ -414,6 +414,7 @@ if(!required()){
       e.preventDefault();
       const showInvalid=()=>{
         dobInput.classList.add('invalid');
+        dobInput.value='';
         const reset=()=>{
           dobInput.oninput=null;
           dobInput.onchange=null;
@@ -485,7 +486,7 @@ if(!required()){
     const parentLastNameInput=parentForm.querySelector('input[name="family-name"]');
     const parentFirstNameInput=parentForm.querySelector('input[name="given-name"]');
     const totpInput=parentForm.querySelector('input[name="totp"]');
-    form.addEventListener('submit',async(e)=>{
+    parentForm.addEventListener('submit',async(e)=>{
       e.preventDefault();
       const showInvalid=()=>{
         dobInput.classList.add('invalid');
