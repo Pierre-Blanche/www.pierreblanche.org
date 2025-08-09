@@ -242,10 +242,15 @@ if(!required()){
   history.replaceState(0,'',null);
   window.addEventListener('popstate',e=>{
     const tab=tabs[e.state];
-    if(tab.hasAttribute('inert')) selectTab(tab,false);
+    if(tab.hasAttribute('inert')) selectTab(tab,false,false);
   });
-  const selectTab=(tab,push)=>tabs.forEach((it,i)=>{
+  const selectTab=(tab,push,clear)=>tabs.forEach((it,i)=>{
     if(it===tab){
+      if(clear){
+        const form=it.querySelector('form');
+        if(form) form.reset();
+        form.querySelectorAll('input[type="date"]').forEach(it=>it.valueAsDate=defaultDate);
+      }
       it.removeAttribute('inert');
       if(push){
         switch(tabLevels[i]){
@@ -257,8 +262,6 @@ if(!required()){
       }
       if(abortController&&tab!==loginTab) abortController.abort();
     }else it.setAttribute('inert','');
-    it.querySelectorAll('input:is([type="text"],[type="email"],[type="number"])').forEach(it=>it.value='');
-    it.querySelectorAll('input[type="date"]').forEach(it=>it.valueAsDate=defaultDate);
   });
   document.querySelectorAll('input[name="cancel"]').forEach(it=>it.addEventListener('click',e=>{
     e.preventDefault();
@@ -266,11 +269,11 @@ if(!required()){
   }));
   document.querySelector('#otp').addEventListener('click',async e=>{
     e.preventDefault();
-    selectTab(otpRequestTab,true);
+    selectTab(otpRequestTab,true,true);
   });
   document.querySelector('#register').addEventListener('click',async e=>{
     e.preventDefault();
-    selectTab(registerTab,true)
+    selectTab(registerTab,true,true)
   });
   const adjustDate=s=>{
     const split=s.split('/');
@@ -383,7 +386,7 @@ if(!required()){
         body.append('dob',yyyy+mm+dd);
       }
       const response=await fetch('/api/otp',{method: 'POST',body});
-      selectTab(response.ok?otpSentTab:errorTab,true);
+      selectTab(response.ok?otpSentTab:errorTab,true,true);
     });
   }
   {
@@ -421,7 +424,7 @@ if(!required()){
     };
     dobInput.addEventListener('change',updateTotpVisibility);
     dobInput.addEventListener('keyup',updateTotpVisibility);
-    _dobInput.valueAsDate=new Date(2000,0,31,12,0,0,0);
+    _dobInput.valueAsDate=defaultDate;
     _dobInput.addEventListener('change',_=>{
       const dob=_dobInput?.valueAsDate;
       if(dob){
@@ -457,7 +460,7 @@ if(!required()){
         return;
       }
       if(y>currentYear-16){
-        selectTab(registerParentTab,true);
+        selectTab(registerParentTab,true,false);
         return;
       }
       const body=new FormData();
@@ -493,7 +496,7 @@ if(!required()){
         };
       }else if(response.status===400){
         showInvalid();
-      }else if(response.status>=500) selectTab(errorTab,true);
+      }else if(response.status>=500) selectTab(errorTab,true,true);
     });
   }
   {
@@ -556,7 +559,7 @@ if(!required()){
       const totp=totpInput?.value?.trim();
       if(totp) body.append('totp',totp);
       const response=await fetch('/api/user',{method: 'POST',body});
-      if(response.ok) selectTab(registerConfirmationTab,true);
+      if(response.ok) selectTab(registerConfirmationTab,true,true);
       else if(response.status===403){
         totpInput.classList.add('invalid');
         totpInput.value='';
@@ -574,7 +577,7 @@ if(!required()){
       }else if(response.status===400){
         showInvalid();
         history.back();
-      }else if(response.status>=500) selectTab(errorTab,true);
+      }else if(response.status>=500) selectTab(errorTab,true,true);
     });
   }
   const passkeyInput=document.querySelector('input#passkey');
